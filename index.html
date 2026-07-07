@@ -573,8 +573,8 @@ function renderTerms(){
   const grid = document.getElementById('termGrid');
   grid.innerHTML = TERMS.map(t=>`
     <article class="term-card">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
-        <h3>${t.name}</h3><span class="chip">${t.ref}</span>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+        <h3>${t.name}</h3><span class="chip" style="flex-shrink:0">${t.ref}</span>
       </div>
       <p>${t.def}</p>
       <div class="term-why">${t.why}</div>
