@@ -6,6 +6,8 @@
 <title>Thinking, Fast and Slow — A Field Guide</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400;9..144,600;9..144,900,100&family=Nunito+Sans:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <style>
 :root{
   --paper:#FFF6E9;
@@ -628,7 +630,8 @@ h2{font-size:clamp(1.9rem,4vw,2.7rem);font-weight:900;letter-spacing:-.01em;marg
 .companion-strip{
   position:fixed;top:70px;right:16px;z-index:90;
   background:var(--card);border:2px solid var(--ink);border-radius:16px;
-  box-shadow:var(--shadow-lift);padding:12px 14px 12px 16px;max-width:320px;
+  box-shadow:var(--shadow-lift);padding:14px 16px;width:360px;max-width:calc(100vw - 24px);
+  max-height:calc(100vh - 90px);overflow-y:auto;
   display:none;animation:palettein .28s cubic-bezier(.2,.7,.15,1);
 }
 .companion-strip.active{display:block}
@@ -638,11 +641,32 @@ h2{font-size:clamp(1.9rem,4vw,2.7rem);font-weight:900;letter-spacing:-.01em;marg
   display:flex;align-items:center;gap:6px;
 }
 .companion-strip-title{
-  font-family:'Fraunces',serif;font-weight:900;font-size:1.02rem;
-  margin:4px 0 6px;line-height:1.25;
+  font-family:'Fraunces',serif;font-weight:900;font-size:1.08rem;
+  margin:6px 0 4px;line-height:1.25;
+}
+.companion-strip-part{
+  font-family:'Space Mono',monospace;font-size:.68rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
+  margin-bottom:10px;
+}
+.companion-strip-summary{
+  font-size:.9rem;line-height:1.55;color:var(--ink);margin-bottom:10px;
+}
+.companion-strip-takeaway{
+  background:var(--paper);border-left:4px solid var(--marigold);
+  padding:8px 10px 8px 12px;border-radius:0 10px 10px 0;
+  margin-bottom:10px;font-size:.85rem;line-height:1.5;color:var(--ink);
+}
+.companion-strip-takeaway::before{
+  content:'Takeaway';display:block;
+  font-family:'Space Mono',monospace;font-size:.62rem;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);
+  margin-bottom:3px;
 }
 .companion-strip-stats{
-  font-size:.82rem;color:var(--ink-soft);margin-bottom:10px;
+  font-family:'Space Mono',monospace;font-size:.72rem;font-weight:700;
+  letter-spacing:.06em;color:var(--ink-soft);margin-bottom:10px;
+  padding-top:8px;border-top:1px dashed #E4D6C3;
 }
 .companion-strip-actions{
   display:flex;gap:6px;align-items:center;flex-wrap:wrap;
@@ -766,9 +790,13 @@ h2{font-size:clamp(1.9rem,4vw,2.7rem);font-weight:900;letter-spacing:-.01em;marg
 }
 .math-card h3{font-size:1.25rem;font-weight:900}
 .formula{
-  font-family:'Space Mono',monospace;font-size:.92rem;background:var(--ink);color:#FFE9C9;
-  border-radius:12px;padding:12px 16px;overflow-x:auto;white-space:nowrap;
+  background:var(--ink);color:#FFE9C9;
+  border-radius:12px;padding:16px 20px;overflow-x:auto;
+  text-align:center;font-family:'Space Mono',monospace;font-size:.92rem;
 }
+.formula .katex{font-size:1.35em;color:#FFE9C9}
+.formula .katex-display{margin:0}
+.formula .katex-display > .katex{white-space:normal}
 .math-card h4{font-family:'Space Mono',monospace;font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft);margin-top:6px}
 .math-card p{font-size:.94rem;color:var(--ink-soft)}
 .math-card .hook{color:var(--ink);font-weight:700;font-size:.95rem}
@@ -1038,6 +1066,9 @@ footer p{color:#CFC6DA;font-size:.92rem;max-width:560px;margin:0 auto}
 <aside class="companion-strip" id="companionStrip" aria-live="polite">
   <div class="companion-strip-eyebrow">📖 <span>Reading companion</span></div>
   <div class="companion-strip-title" id="companionStripTitle">Chapter</div>
+  <div class="companion-strip-part" id="companionStripPart"></div>
+  <div class="companion-strip-summary" id="companionStripSummary"></div>
+  <div class="companion-strip-takeaway" id="companionStripTakeaway"></div>
   <div class="companion-strip-stats" id="companionStripStats"></div>
   <div class="companion-strip-actions">
     <button class="companion-strip-btn" id="companionPrev" aria-label="Previous chapter">‹ Prev</button>
@@ -1872,27 +1903,27 @@ function renderQuizEnd(shell){
 /* ================= DATA: MATH CORNER ================= */
 const MATHS = [
 {name:'Bayes\u2019 rule & base rates',
- formula:'P(H\u2223E) = P(E\u2223H) \u00b7 P(H) / P(E)',
+ formula:'P(H \\mid E) \\;=\\; \\dfrac{P(E \\mid H) \\cdot P(H)}{P(E)}',
  why:'Your belief after evidence should combine how diagnostic the evidence is with how common the thing was to begin with. Intuition uses only the first half.',
  use:'Medical tests, hiring signals, judging \u201cwitnesses\u201d of any kind \u2014 anywhere a vivid clue meets a boring frequency.',
  example:'The cab problem: 85% of cabs are Green, a witness (80% reliable) says the cab was Blue. Feels like ~80% Blue. Bayes: P = (0.8\u00d70.15) / (0.8\u00d70.15 + 0.2\u00d70.85) \u2248 41%. The base rate quietly wins.'},
 {name:'Regression to the mean',
- formula:'predicted \u2248 mean + r \u00d7 (observed \u2212 mean)',
+ formula:'\\text{predicted} \\;\\approx\\; \\bar{y} \\,+\\, r \\cdot (\\text{observed} - \\bar{y})',
  why:'Whenever correlation between two measurements is imperfect (r < 1), extreme results are followed by more average ones \u2014 with no cause whatsoever. Your brain will supply a cause anyway.',
  use:'Performance reviews, A/B test follow-ups, \u201csophomore slumps,\u201d miracle diets, and every coach who believes yelling works.',
  example:'A climber\u2019s brilliant attempt (way above their mean) is mostly skill plus good luck. Luck doesn\u2019t repeat on command, so the next attempt lands closer to their true average \u2014 praise didn\u2019t \u201cmake them soft.\u201d'},
 {name:'The law of small numbers',
- formula:'SE = \u03c3 / \u221an',
+ formula:'\\text{SE} \\;=\\; \\dfrac{\\sigma}{\\sqrt{n}}',
  why:'The standard error shrinks with sample size \u2014 meaning small samples swing wildly. Small schools produce both the best AND worst test scores; tiny counties have both the highest AND lowest cancer rates. Same reason: small n.',
  use:'Any time someone shows you a streak, a small pilot study, a 5-review restaurant rating, or \u201cwe tried it for a week and it worked.\u201d',
  example:'A fund manager beats the market 4 years of 5. With thousands of managers, hundreds achieve this by coin-flip luck alone. Ask for n before applauding.'},
 {name:'The conjunction rule',
- formula:'P(A \u2227 B) \u2264 P(A)',
+ formula:'P(A \\wedge B) \\;\\le\\; P(A)',
  why:'A specific, detailed story can never be more probable than its vaguest component \u2014 yet detail makes stories more plausible-feeling. Plausibility and probability move in opposite directions.',
  use:'Scenario planning, risk forecasts, conspiracy theories, and any pitch where every added detail makes you nod harder.',
  example:'\u201cMagda works in a bank AND blogs about vegan food\u201d cannot beat \u201cMagda works in a bank.\u201d The blog detail adds representativeness and subtracts probability, simultaneously.'},
 {name:'Expected value (what Econs use)',
- formula:'EV = \u03a3 p\u1d62 \u00b7 x\u1d62',
+ formula:'\\mathrm{EV} \\;=\\; \\sum_{i} p_i \\cdot x_i',
  why:'The rational baseline: weight each outcome by its probability, sum, decide. Humans deviate from it in the specific, predictable ways prospect theory maps \u2014 so you need EV as the ruler to measure the bending.',
  use:'Insurance, warranties, lottery tickets, salary negotiations with equity, and coin-flip offers from suspicious friends.',
  example:'Coin flip: +1,200 z\u0142 or \u22121,000 z\u0142 \u2192 EV = 0.5\u00d71200 \u2212 0.5\u00d71000 = +100 z\u0142. An Econ accepts instantly. A Human recoils \u2014 see the curve below for exactly why.'}
@@ -1901,12 +1932,19 @@ const MATHS = [
 function mathSlug(name){
   return name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 }
+function renderFormula(el, tex){
+  if(!el) return;
+  if(window.katex){
+    try { katex.render(tex, el, {throwOnError:false, displayMode:true}); return; } catch(e){}
+  }
+  el.textContent = tex;
+}
 function renderMath(){
   const grid=document.getElementById('mathGrid');
   grid.innerHTML = MATHS.map(m=>`
     <div class="math-card" id="math-${mathSlug(m.name)}">
       <h3>${m.name}</h3>
-      <div class="formula">${m.formula}</div>
+      <div class="formula" data-tex="${m.formula.replace(/"/g,'&quot;')}"></div>
       <h4>Why it matters</h4><p>${m.why}</p>
       <h4>Where it saves you</h4><p class="hook">${m.use}</p>
       <h4>Worked example</h4><p>${m.example}</p>
@@ -1924,6 +1962,7 @@ function renderMath(){
         </div>
       </div>
     </div>`;
+  grid.querySelectorAll('.formula[data-tex]').forEach(el => renderFormula(el, el.dataset.tex));
   drawCurve();
   const slider=document.getElementById('ptSlider');
   slider.addEventListener('input',()=>updateCurve(+slider.value));
@@ -2942,56 +2981,132 @@ initPalette();
 
 const COMPANION_KEY = 'tfs_companion_v1';
 const PARTS = [
-  { roman:'I',   title:'Two Systems',            chapters:[
-    [1,  'The Characters of the Story'],
-    [2,  'Attention and Effort'],
-    [3,  'The Lazy Controller'],
-    [4,  'The Associative Machine'],
-    [5,  'Cognitive Ease'],
-    [6,  'Norms, Surprises, and Causes'],
-    [7,  'A Machine for Jumping to Conclusions'],
-    [8,  'How Judgments Happen'],
-    [9,  'Answering an Easier Question'],
+  { roman:'I', title:'Two Systems', chapters:[
+    { num:1, title:'The Characters of the Story',
+      summary:'Kahneman introduces the two-system framework: System 1 (fast, automatic, always on) and System 2 (slow, effortful, often lazy). System 2 feels in charge but mostly ratifies what System 1 already decided.',
+      takeaway:'One character blurts, the other broods. Most "thinking" is System 1’s confident guessing.' },
+    { num:2, title:'Attention and Effort',
+      summary:'System 2 effort is physically real — pupils dilate, heart rate climbs, and attention has a hard capacity ceiling. Push past that ceiling and errors bloom.',
+      takeaway:'Mental effort is bounded. Overload System 2 and System 1 takes the wheel.' },
+    { num:3, title:'The Lazy Controller',
+      summary:'System 2 defaults to low effort. Under cognitive load or fatigue, self-control and careful reasoning both collapse, and System 1’s answers slip through unchecked.',
+      takeaway:'System 2 is a lazy editor. A tired mind believes what a fresh one would have questioned.' },
+    { num:4, title:'The Associative Machine',
+      summary:'System 1 is an associative memory — words prime words, ideas prime ideas, and priming shapes what you see and feel milliseconds before you’re aware of it. The chain runs beneath consciousness.',
+      takeaway:'What primes System 1 becomes what you notice — and then what you "think."' },
+    { num:5, title:'Cognitive Ease',
+      summary:'Fluency — the ease of processing something — feels like truth, familiarity, and safety. Repetition, clarity, and even rhymes raise credibility with no bearing on accuracy.',
+      takeaway:'Fluency masquerades as truth. If it feels easy, it feels right.' },
+    { num:6, title:'Norms, Surprises, and Causes',
+      summary:'System 1 builds a model of what’s normal and flags surprises. It also insists on causal explanations, inventing them for coincidences and randomness alike.',
+      takeaway:'Causality is System 1’s default template. Statistical thinking has to be trained in.' },
+    { num:7, title:'A Machine for Jumping to Conclusions',
+      summary:'WYSIATI — What You See Is All There Is. System 1 constructs coherent stories from whatever is available, ignoring what’s missing, and hands the story to System 2 as data.',
+      takeaway:'Your confidence measures the story’s coherence, not the evidence’s quality.' },
+    { num:8, title:'How Judgments Happen',
+      summary:'System 1 constantly rates everything on rough scales — happy/sad, safe/dangerous, competent/incompetent — and translates intensity across scales you never asked about.',
+      takeaway:'Your gut runs background scores on everyone and everything, always.' },
+    { num:9, title:'Answering an Easier Question',
+      summary:'When faced with a hard question ("How happy is your life?"), System 1 substitutes an easier related one ("How’s my mood?") and answers that. Neither system notices the swap.',
+      takeaway:'The mind quietly swaps hard questions for easy ones — and you never see the swap.' },
   ]},
-  { roman:'II',  title:'Heuristics and Biases',  chapters:[
-    [10, 'The Law of Small Numbers'],
-    [11, 'Anchors'],
-    [12, 'The Science of Availability'],
-    [13, 'Availability, Emotion, and Risk'],
-    [14, 'Tom W’s Specialty'],
-    [15, 'Linda: Less is More'],
-    [16, 'Causes Trump Statistics'],
-    [17, 'Regression to the Mean'],
-    [18, 'Taming Intuitive Predictions'],
+  { roman:'II', title:'Heuristics and Biases', chapters:[
+    { num:10, title:'The Law of Small Numbers',
+      summary:'Small samples produce wild patterns that mean nothing. Cancer clusters in tiny counties, hot streaks in athletes, and "we tried it for a week" evidence all live here.',
+      takeaway:'Small samples exaggerate. Always ask "how many?" before trusting a pattern.' },
+    { num:11, title:'Anchors',
+      summary:'An initial number bends every subsequent estimate toward it, even when the number is obviously random or irrelevant. The effect is huge, robust, and survives warnings.',
+      takeaway:'Any number in the room bends your judgment. Name it before it names you.' },
+    { num:12, title:'The Science of Availability',
+      summary:'You judge how common something is by how easily examples come to mind. Vivid, recent, dramatic events are over-represented in memory and therefore over-estimated in the world.',
+      takeaway:'Frequency judgments are secretly retrieval-fluency judgments. Go find the boring number.' },
+    { num:13, title:'Availability, Emotion, and Risk',
+      summary:'Emotion supercharges availability. Media covers dramatic risks → fear rises → more coverage → more fear. Rare vivid dangers dominate imagination while bigger risks stay invisible.',
+      takeaway:'Public fear tracks storytelling, not statistics.' },
+    { num:14, title:'Tom W’s Specialty',
+      summary:'A personality sketch that fits a stereotype makes people ignore how rare the category actually is. Representativeness (the resemblance) crushes the base rate (the frequency).',
+      takeaway:'Resemblance feels like probability. It isn’t. Always ask about base rates.' },
+    { num:15, title:'Linda: Less is More',
+      summary:'The conjunction fallacy: "Linda is a bank teller AND a feminist" rates as more probable than "Linda is a bank teller," because the compound sounds more like her. Even statisticians fall for it.',
+      takeaway:'Detail makes stories feel plausible but be less probable. Every added condition can only lower the odds.' },
+    { num:16, title:'Causes Trump Statistics',
+      summary:'Statistical base rates get ignored when they’re dry, but used when they’re framed causally. Same number, different weight — depending entirely on whether you can picture the mechanism.',
+      takeaway:'A statistical fact needs a causal story to survive System 1’s editing.' },
+    { num:17, title:'Regression to the Mean',
+      summary:'Extreme results are followed by less extreme ones — pure statistics, no cause. But we invent causes: "praise softened them," "criticism worked." Regression is invisible and constantly misread as effect.',
+      takeaway:'Whatever went up came from luck as much as skill. It will come back down.' },
+    { num:18, title:'Taming Intuitive Predictions',
+      summary:'Intuitive predictions treat weak evidence as if it were strong, producing forecasts that are far too extreme. The remedy is to regress your prediction toward the mean by how weak the evidence is.',
+      takeaway:'Extreme intuition needs shrinking. The weaker your data, the closer to average your forecast should be.' },
   ]},
-  { roman:'III', title:'Overconfidence',         chapters:[
-    [19, 'The Illusion of Understanding'],
-    [20, 'The Illusion of Validity'],
-    [21, 'Intuitions vs. Formulas'],
-    [22, 'Expert Intuition: When Can We Trust It?'],
-    [23, 'The Outside View'],
-    [24, 'The Engine of Capitalism'],
+  { roman:'III', title:'Overconfidence', chapters:[
+    { num:19, title:'The Illusion of Understanding',
+      summary:'We reconstruct the past into a story that makes the outcome look inevitable, quietly editing our earlier uncertainty. This makes the world look more predictable than it is.',
+      takeaway:'The past looks obvious in retrospect only because you’ve rewritten it.' },
+    { num:20, title:'The Illusion of Validity',
+      summary:'Confidence is a feeling generated by narrative coherence, not by accuracy. Stock analysts, clinicians, and pundits keep the feeling long after their records reveal it’s illusion.',
+      takeaway:'Confidence measures coherence in your mind, not accuracy in the world.' },
+    { num:21, title:'Intuitions vs. Formulas',
+      summary:'Simple statistical formulas beat expert intuition in domain after domain — parole outcomes, medical diagnosis, wine prices, marital stability. The experts remain unconvinced for decades.',
+      takeaway:'Even a crude formula beats your gut. Consistency wins.' },
+    { num:22, title:'Expert Intuition: When Can We Trust It?',
+      summary:'Genuine intuitive expertise develops only in environments with rapid, unambiguous feedback (chess, firefighting). In low-validity domains (politics, stock picking), "intuition" is illusion.',
+      takeaway:'Trust intuition where the environment gives fast feedback. Elsewhere, trust the formula.' },
+    { num:23, title:'The Outside View',
+      summary:'Planning fallacy: people forecast a project by imagining the specific plan (inside view), ignoring how long similar projects usually take (outside view). Adding an outside view is the biggest single debiasing move.',
+      takeaway:'Before you plan, ask how long this kind of thing usually takes for others.' },
+    { num:24, title:'The Engine of Capitalism',
+      summary:'Optimism drives entrepreneurship and progress — and drives most business failures. Optimists ignore competitors ("competition neglect") and underestimate risks. Overconfidence isn’t cured by expertise.',
+      takeaway:'Optimism is the fuel of capitalism and the source of most crashes. Run a premortem.' },
   ]},
-  { roman:'IV',  title:'Choices',                chapters:[
-    [25, 'Bernoulli’s Errors'],
-    [26, 'Prospect Theory'],
-    [27, 'The Endowment Effect'],
-    [28, 'Bad Events'],
-    [29, 'The Fourfold Pattern'],
-    [30, 'Rare Events'],
-    [31, 'Risk Policies'],
-    [32, 'Keeping Score'],
-    [33, 'Reversals'],
-    [34, 'Frames and Reality'],
+  { roman:'IV', title:'Choices', chapters:[
+    { num:25, title:'Bernoulli’s Errors',
+      summary:'Classical utility theory assumed people evaluate final wealth. They don’t — they evaluate changes from a reference point. That single move breaks the old model.',
+      takeaway:'Preferences are about changes from where you are, not about absolute wealth.' },
+    { num:26, title:'Prospect Theory',
+      summary:'Outcomes are evaluated as gains/losses from a reference point, with diminishing sensitivity to size and loss aversion — losses hurt about twice as much as equivalent gains feel good.',
+      takeaway:'Losses loom larger than gains — by roughly 2× — and this bends most everyday decisions.' },
+    { num:27, title:'The Endowment Effect',
+      summary:'Once you own something, giving it up feels like a loss. Selling prices exceed buying prices for the same item — often by 2× — creating the endowment effect.',
+      takeaway:'What you own is worth more to you than the same thing not-yet-owned.' },
+    { num:28, title:'Bad Events',
+      summary:'Negative events, emotions, and words command more attention and more psychological weight than positive ones. Bad is stronger than good — evolutionarily useful, day-to-day distorting.',
+      takeaway:'Your mind runs on threat detection. Negativity dominates most of everything.' },
+    { num:29, title:'The Fourfold Pattern',
+      summary:'Preferences split four ways depending on gains vs. losses and rare vs. common probabilities: risk-averse for likely gains and rare losses; risk-seeking for rare gains and likely losses.',
+      takeaway:'Your risk preferences flip four ways. All four are captured by prospect theory.' },
+    { num:30, title:'Rare Events',
+      summary:'We overweight small probabilities when they’re made vivid — which is why lotteries and terror fears work. Denominator neglect: "1000 in a million" scares more than "0.1%."',
+      takeaway:'Small numbers hit hard when they’re vivid. Denominators don’t defend against imagination.' },
+    { num:31, title:'Risk Policies',
+      summary:'Evaluating decisions one at a time (narrow framing) amplifies loss aversion. Evaluating them as a policy across many decisions (broad framing) is more rational and usually produces better outcomes.',
+      takeaway:'One decision at a time is a trap. Zoom out to policy-level framing.' },
+    { num:32, title:'Keeping Score',
+      summary:'Mental accounting bundles gains and losses into psychological accounts. The sunk cost fallacy, disposition effect (selling winners fast, holding losers), and regret aversion all follow.',
+      takeaway:'Mental accounting produces expensive choices. Never let sunk costs steer new decisions.' },
+    { num:33, title:'Reversals',
+      summary:'Evaluating two options separately versus together makes different features salient — and preferences reverse. This breaks the economic assumption of stable preferences.',
+      takeaway:'Change what you’re comparing against, change the answer.' },
+    { num:34, title:'Frames and Reality',
+      summary:'Logically identical descriptions produce different choices depending on framing ("90% survival" vs "10% mortality"). Framing effects are enormous and undermine stable preferences.',
+      takeaway:'Framing isn’t communication — it’s manipulation. Audit every choice for its frame.' },
   ]},
-  { roman:'V',   title:'Two Selves',             chapters:[
-    [35, 'Two Selves'],
-    [36, 'Life as a Story'],
-    [37, 'Experienced Well-Being'],
-    [38, 'Thinking About Life'],
+  { roman:'V', title:'Two Selves', chapters:[
+    { num:35, title:'Two Selves',
+      summary:'Two selves live in one head: the experiencing self (what feels good or bad in the moment) and the remembering self (what you tell the story about later). They frequently disagree.',
+      takeaway:'The self that lives your life and the self that remembers it are different. Guess which one runs the show.' },
+    { num:36, title:'Life as a Story',
+      summary:'The remembering self scores an experience by peak intensity and final moment (peak-end rule) and largely ignores how long it lasted (duration neglect). This distorts memory and decisions.',
+      takeaway:'Memory is a highlight reel scored on peaks and endings. Duration is invisible in retrospect.' },
+    { num:37, title:'Experienced Well-Being',
+      summary:'Moment-to-moment mood — the U-index — depends on attention, sleep, social contact, and time pressure more than on income or big life events. Day-to-day well-being lives in the small stuff.',
+      takeaway:'Well-being lives in the minutes, not the milestones.' },
+    { num:38, title:'Thinking About Life',
+      summary:'Life satisfaction is a judgment by the remembering self, dominated by availability and the focusing illusion: whatever you attend to becomes disproportionately important to your evaluation.',
+      takeaway:'Nothing in life is as important as you think it is, while you’re thinking about it.' },
   ]},
 ];
-const ALL_CHAPTERS = PARTS.flatMap(p => p.chapters.map(([n,t]) => ({num:n, title:t, part:p.roman, partTitle:p.title})));
+const ALL_CHAPTERS = PARTS.flatMap(p => p.chapters.map(c => ({...c, part:p.roman, partTitle:p.title})));
 const CHAPTER_BY_NUM = Object.fromEntries(ALL_CHAPTERS.map(c => [c.num, c]));
 
 function extractChapters(ref){
@@ -3112,6 +3227,9 @@ function updateCompanionUI(){
   const navLabel = document.getElementById('companionNavLabel');
   const strip = document.getElementById('companionStrip');
   const title = document.getElementById('companionStripTitle');
+  const partEl = document.getElementById('companionStripPart');
+  const summary = document.getElementById('companionStripSummary');
+  const takeaway = document.getElementById('companionStripTakeaway');
   const stats = document.getElementById('companionStripStats');
   const prev = document.getElementById('companionPrev');
   const next = document.getElementById('companionNext');
@@ -3132,19 +3250,21 @@ function updateCompanionUI(){
   if(navLabel) navLabel.textContent = 'Ch. ' + chapter;
 
   const counts = countItems(chapter);
-  const parts = [];
-  if(counts.terms) parts.push(pluralize(counts.terms,'concept'));
-  if(counts.biases) parts.push(pluralize(counts.biases,'bias','biases'));
-  if(counts.extras) parts.push(pluralize(counts.extras,'lab/math item'));
-  const partLabel = 'Part ' + info.part + ' · ' + info.partTitle;
+  const bits = [];
+  if(counts.terms) bits.push(pluralize(counts.terms,'concept'));
+  if(counts.biases) bits.push(pluralize(counts.biases,'bias','biases'));
+  if(counts.extras) bits.push(pluralize(counts.extras,'lab/math item'));
   title.textContent = 'Ch. ' + chapter + ' · ' + info.title;
-  stats.innerHTML = `<em>${partLabel}</em><br>${parts.length ? parts.join(' · ') + ' introduced here' : 'Nothing catalogued from this chapter yet.'}`;
+  partEl.textContent = 'Part ' + info.part + ' · ' + info.partTitle;
+  summary.textContent = info.summary || '';
+  takeaway.textContent = info.takeaway || '';
+  stats.textContent = bits.length ? bits.join(' · ') + ' on this site' : 'No catalogued items from this chapter yet.';
   strip.classList.add('active');
 
   const idx = ALL_CHAPTERS.findIndex(c => c.num === chapter);
   prev.disabled = idx <= 0;
   next.disabled = idx >= ALL_CHAPTERS.length - 1;
-  jump.disabled = parts.length === 0;
+  jump.disabled = bits.length === 0;
 
   applyChapterHighlights(chapter);
 }
@@ -3168,10 +3288,10 @@ function renderChapterList(){
   root.innerHTML = PARTS.map(p => `
     <div class="companion-part">
       <div class="companion-part-head">Part ${p.roman} <span class="companion-part-title">· ${p.title}</span></div>
-      ${p.chapters.map(([n,t]) => `
-        <button class="companion-chapter${n === active ? ' active' : ''}" data-ch="${n}">
-          <span class="companion-chapter-num">Ch. ${n}</span>
-          <span class="companion-chapter-title">${t}</span>
+      ${p.chapters.map(c => `
+        <button class="companion-chapter${c.num === active ? ' active' : ''}" data-ch="${c.num}">
+          <span class="companion-chapter-num">Ch. ${c.num}</span>
+          <span class="companion-chapter-title">${c.title}</span>
         </button>
       `).join('')}
     </div>
