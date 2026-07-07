@@ -245,6 +245,157 @@ h2{font-size:clamp(1.9rem,4vw,2.7rem);font-weight:900;letter-spacing:-.01em;marg
   100%{box-shadow:var(--shadow)}
 }
 
+/* ---------- deck (spaced repetition) ---------- */
+.deck-dashboard{
+  background:var(--card);border:2px solid var(--ink);border-radius:var(--radius);
+  padding:26px 24px;box-shadow:var(--shadow);
+  display:grid;grid-template-columns:1fr auto;gap:22px;align-items:center;
+}
+@media (max-width:640px){.deck-dashboard{grid-template-columns:1fr}}
+.deck-stats{display:flex;gap:22px;flex-wrap:wrap}
+.deck-stat{display:flex;flex-direction:column;gap:2px}
+.deck-stat-num{
+  font-family:'Fraunces',serif;font-size:1.85rem;font-weight:900;line-height:1;
+}
+.deck-stat-num.due{color:var(--flame)}
+.deck-stat-num.mastered{color:var(--teal)}
+.deck-stat-num.total{color:var(--indigo)}
+.deck-stat-label{
+  font-family:'Space Mono',monospace;font-size:.7rem;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);
+}
+.deck-cta{
+  background:var(--flame);color:var(--paper);border:2px solid var(--ink);
+  border-radius:16px;padding:14px 22px;font-weight:800;font-size:1.02rem;
+  box-shadow:var(--shadow);transition:transform .15s,background .15s;
+  font-family:inherit;
+}
+.deck-cta:hover{background:#E85818;transform:translateY(-1px)}
+.deck-cta:disabled{background:var(--ink-soft);cursor:not-allowed;transform:none}
+.deck-cta.secondary{background:var(--card);color:var(--ink)}
+.deck-cta.secondary:hover{background:#FFF3E2}
+.deck-reset{
+  background:none;border:none;color:var(--ink-soft);
+  font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  text-decoration:underline;padding:6px 0;margin-top:14px;text-align:left;
+}
+.deck-reset:hover{color:var(--rose)}
+.deck-session-shell{
+  background:var(--card);border:2px solid var(--ink);border-radius:var(--radius);
+  padding:22px 22px 26px;box-shadow:var(--shadow-lift);
+}
+.deck-progress{
+  display:flex;align-items:center;gap:12px;margin-bottom:18px;
+}
+.deck-progress-bar{
+  flex:1;height:10px;background:var(--paper-deep);border:2px solid var(--ink);
+  border-radius:999px;overflow:hidden;
+}
+.deck-progress-fill{
+  height:100%;background:linear-gradient(90deg,var(--marigold),var(--flame));
+  transition:width .35s ease;
+}
+.deck-progress-text{
+  font-family:'Space Mono',monospace;font-size:.78rem;font-weight:700;
+  color:var(--ink-soft);white-space:nowrap;
+}
+.deck-card{
+  background:var(--paper);border:2px solid var(--ink);border-radius:18px;
+  padding:28px 24px;min-height:280px;position:relative;
+  display:flex;flex-direction:column;
+}
+.deck-card-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.deck-cat-chip{
+  display:inline-block;padding:4px 12px;border-radius:999px;
+  border:2px solid var(--ink);font-family:'Space Mono',monospace;
+  font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--card);
+}
+.deck-cat-chip.concept{background:#E3E7FA}
+.deck-cat-chip.bias{background:#FFE9D2}
+.deck-fam-chip{
+  padding:4px 10px;border-radius:999px;font-family:'Space Mono',monospace;
+  font-size:.7rem;font-weight:700;color:var(--ink-soft);letter-spacing:.06em;
+  border:1.5px solid var(--ink-soft);background:var(--card);
+}
+.deck-front{
+  flex:1;display:flex;align-items:center;justify-content:center;text-align:center;
+  padding:14px 4px;
+}
+.deck-front h3{
+  font-family:'Fraunces',serif;font-size:clamp(1.7rem,4.2vw,2.5rem);
+  font-weight:900;line-height:1.15;letter-spacing:-.01em;
+}
+.deck-front .deck-emoji{
+  font-size:2rem;display:block;margin-bottom:12px;
+}
+.deck-back{
+  animation:labfade .3s ease;
+}
+.deck-back p{margin-bottom:10px;font-size:1rem;line-height:1.6}
+.deck-back p:last-child{margin-bottom:0}
+.deck-back strong{color:var(--ink)}
+.deck-back em{color:var(--ink-soft)}
+.deck-back-link{
+  display:inline-block;margin-top:8px;font-family:'Space Mono',monospace;
+  font-size:.78rem;font-weight:700;letter-spacing:.06em;
+  color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:2px;text-decoration-color:var(--marigold);
+  text-underline-offset:3px;
+}
+.deck-back-link:hover{color:var(--flame)}
+.deck-actions{
+  margin-top:18px;display:flex;justify-content:center;
+}
+.deck-reveal-btn{
+  background:var(--ink);color:var(--paper);border:2px solid var(--ink);
+  border-radius:14px;padding:12px 26px;font-weight:800;font-size:.98rem;
+  font-family:inherit;transition:transform .15s,background .15s;
+}
+.deck-reveal-btn:hover{background:var(--indigo);transform:translateY(-1px)}
+.deck-rating{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px;
+}
+.rate-btn{
+  border:2px solid var(--ink);border-radius:14px;padding:14px 12px;
+  font-weight:800;font-size:.95rem;font-family:inherit;
+  background:var(--card);color:var(--ink);cursor:pointer;
+  transition:transform .12s,background .15s,color .15s;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+}
+.rate-btn:hover{transform:translateY(-2px)}
+.rate-btn .rate-label{font-size:.95rem}
+.rate-btn .rate-when{
+  font-family:'Space Mono',monospace;font-size:.68rem;
+  font-weight:700;letter-spacing:.06em;color:var(--ink-soft);
+  text-transform:uppercase;
+}
+.rate-missed{background:#FEE2E9;color:#8A1F42}
+.rate-missed:hover{background:#FCC7D5}
+.rate-missed .rate-when{color:#8A1F42;opacity:.75}
+.rate-good{background:#E3E7FA;color:#2B3672}
+.rate-good:hover{background:#CCD3F2}
+.rate-good .rate-when{color:#2B3672;opacity:.75}
+.rate-easy{background:#D0EFEB;color:#0E5F5A}
+.rate-easy:hover{background:#B4E2DC}
+.rate-easy .rate-when{color:#0E5F5A;opacity:.75}
+.deck-done{
+  background:var(--card);border:2px solid var(--ink);border-radius:var(--radius);
+  padding:36px 26px;box-shadow:var(--shadow);text-align:center;
+}
+.deck-done-emoji{font-size:3rem;margin-bottom:8px}
+.deck-done h3{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:900;margin-bottom:6px}
+.deck-done p{color:var(--ink-soft);font-size:1rem;margin-bottom:16px}
+.deck-done .summary{
+  display:inline-flex;gap:22px;margin:6px 0 18px;padding:10px 16px;
+  border:2px dashed #E4D6C3;border-radius:14px;flex-wrap:wrap;justify-content:center;
+}
+.deck-done .summary span{
+  font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;color:var(--ink);
+}
+.deck-done .summary b{color:var(--flame);font-weight:900}
+.deck-cta-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
 /* ---------- bias library ---------- */
 .family-block{margin-bottom:34px}
 .family-title{
@@ -430,6 +581,7 @@ footer p{color:#CFC6DA;font-size:.92rem;max-width:560px;margin:0 auto}
     <a href="#terms">Concepts</a>
     <a href="#graph">Map</a>
     <a href="#biases">Bias library</a>
+    <a href="#deck">Deck</a>
     <a href="#quiz">Quiz</a>
     <a href="#math">Math corner</a>
     <a href="#roadmap">Go deeper</a>
@@ -519,11 +671,23 @@ footer p{color:#CFC6DA;font-size:.92rem;max-width:560px;margin:0 auto}
   </div>
 </section>
 
+<!-- ===== DECK ===== -->
+<section id="deck">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker k-teal">05 · The deck</div>
+      <h2>Study, one card at a time</h2>
+      <p class="sec-lede">Spaced repetition is how the concepts actually stick. Cards you struggle with come back sooner; ones you know slip further out. Everything saves only in your browser — no accounts, no cloud.</p>
+    </div>
+    <div id="deckRoot"></div>
+  </div>
+</section>
+
 <!-- ===== QUIZ ===== -->
 <section id="quiz">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-kicker k-rose">05 · The gym</div>
+      <div class="sec-kicker k-rose">06 · The gym</div>
       <h2>Spot the bias</h2>
       <p class="sec-lede">Thirteen short stories. Somewhere in each one, a mind quietly goes off the rails. Your job: name the failure. Careful — the wrong options are chosen to be <em>almost</em> right.</p>
     </div>
@@ -535,7 +699,7 @@ footer p{color:#CFC6DA;font-size:.92rem;max-width:560px;margin:0 auto}
 <section id="math">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-kicker k-teal">06 · The engine room</div>
+      <div class="sec-kicker k-teal">07 · The engine room</div>
       <h2>The math under the hood</h2>
       <p class="sec-lede">Kahneman's psychology stands on a small set of statistical ideas. Master these five and half the biases in the library become obvious in advance.</p>
     </div>
@@ -547,7 +711,7 @@ footer p{color:#CFC6DA;font-size:.92rem;max-width:560px;margin:0 auto}
 <section id="roadmap">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-kicker k-flame">07 · Go deeper</div>
+      <div class="sec-kicker k-flame">08 · Go deeper</div>
       <h2>Behavioral economics, the scenic route</h2>
       <p class="sec-lede">Behavioral economics is what happened when psychologists proved that real people — <em>Humans</em> — don't behave like the perfectly rational <em>Econs</em> in textbook models. Kahneman, a psychologist, won the Nobel in economics for it. Here's a path from this book to the whole field.</p>
     </div>
@@ -1813,6 +1977,304 @@ window.addEventListener('hashchange', ()=>{
 if(location.hash){
   setTimeout(()=> openTarget(location.hash.slice(1)), 250);
 }
+</script>
+
+<script>
+/* =================================================================
+   THE DECK — spaced-repetition flashcards for terms and biases.
+   State persists in localStorage. Step-based SRS with 8 buckets.
+   ================================================================= */
+
+const DECK_KEY = 'tfs_deck_v1';
+const MIN = 60*1000, HOUR = 60*MIN, DAY = 24*HOUR;
+const STEPS_MS = [1*MIN, 30*MIN, 1*DAY, 3*DAY, 7*DAY, 14*DAY, 30*DAY, 90*DAY];
+const NEW_PER_SESSION = 8;
+const MAX_SESSION = 30;
+
+function buildDeck(){
+  const cards = [];
+  TERMS.forEach(t => {
+    cards.push({
+      id: 'card-term-' + t.id,
+      category: 'concept',
+      familyLabel: FAM[t.fam].label,
+      front: t.name,
+      back: `<p>${t.def}</p><p><em>Why it matters:</em> ${t.why}</p>`,
+      link: '#term-' + t.id
+    });
+  });
+  BIASES.forEach(f => {
+    f.items.forEach(b => {
+      const slug = biasSlug(b.name);
+      const firstSentence = b.text.split(/(?<=[.!?])\s+/)[0];
+      cards.push({
+        id: 'card-bias-' + slug,
+        category: 'bias',
+        familyLabel: f.fam,
+        emoji: b.emoji,
+        front: b.name,
+        back: `<p><strong>${b.one}</strong></p><p>${firstSentence}</p>`,
+        link: '#bias-' + slug
+      });
+    });
+  });
+  return cards;
+}
+
+function loadDeckState(){
+  try {
+    const raw = localStorage.getItem(DECK_KEY);
+    if(raw) return JSON.parse(raw);
+  } catch(e){}
+  return { version:1, cards:{}, lastSession:0 };
+}
+function saveDeckState(s){
+  try { localStorage.setItem(DECK_KEY, JSON.stringify(s)); } catch(e){}
+}
+
+function rateCard(state, id, rating){
+  const now = Date.now();
+  const s = state.cards[id] || { step:0, seen:0, due:0 };
+  s.seen++;
+  if(rating === 'missed')      s.step = 0;
+  else if(rating === 'good')   s.step = Math.min(s.step + 1, STEPS_MS.length - 1);
+  else if(rating === 'easy')   s.step = Math.min(s.step + 2, STEPS_MS.length - 1);
+  s.due = now + STEPS_MS[s.step];
+  s.lastRated = now;
+  state.cards[id] = s;
+  saveDeckState(state);
+  return s;
+}
+
+function nextInterval(state, id, rating){
+  const s = state.cards[id];
+  const currentStep = s ? s.step : 0;
+  let nextStep;
+  if(rating === 'missed') nextStep = 0;
+  else if(rating === 'good') nextStep = Math.min(currentStep + 1, STEPS_MS.length - 1);
+  else nextStep = Math.min(currentStep + 2, STEPS_MS.length - 1);
+  return STEPS_MS[nextStep];
+}
+
+function formatInterval(ms){
+  if(ms < HOUR) return Math.round(ms/MIN) + ' min';
+  if(ms < DAY)  return Math.round(ms/HOUR) + ' hr';
+  if(ms < 30*DAY) return Math.round(ms/DAY) + ' d';
+  return Math.round(ms/(30*DAY)) + ' mo';
+}
+
+function pickQueue(deck, state){
+  const now = Date.now();
+  const due = [];
+  const fresh = [];
+  deck.forEach(c => {
+    const s = state.cards[c.id];
+    if(!s) fresh.push(c);
+    else if(s.due <= now) due.push({c, dueAt: s.due});
+  });
+  due.sort((a,b) => a.dueAt - b.dueAt);
+  const queue = due.map(d => d.c);
+  fresh.sort(() => Math.random() - 0.5);
+  queue.push(...fresh.slice(0, NEW_PER_SESSION));
+  return queue.slice(0, MAX_SESSION);
+}
+
+/* ---------- render ---------- */
+let DECK = [];
+let deckState = { version:1, cards:{}, lastSession:0 };
+let deckSession = null; // { queue, index, reviewed, newLearned, revealed }
+
+function renderDeck(){
+  const root = document.getElementById('deckRoot');
+  if(!root) return;
+  DECK = buildDeck();
+  deckState = loadDeckState();
+  root.innerHTML = '';
+  if(deckSession){
+    renderDeckSession(root);
+  } else {
+    renderDeckDashboard(root);
+  }
+}
+
+function renderDeckDashboard(root){
+  const now = Date.now();
+  let due = 0, mastered = 0, seen = 0;
+  DECK.forEach(c => {
+    const s = deckState.cards[c.id];
+    if(s){
+      seen++;
+      if(s.due <= now) due++;
+      if(s.step >= 4) mastered++; // 7d+ interval counts as "mastered"
+    }
+  });
+  const totalNew = DECK.length - seen;
+  const canStart = (due + totalNew) > 0;
+  const dash = document.createElement('div');
+  dash.className = 'deck-dashboard';
+  dash.innerHTML = `
+    <div>
+      <div class="deck-stats">
+        <div class="deck-stat">
+          <span class="deck-stat-num due">${due}</span>
+          <span class="deck-stat-label">Due now</span>
+        </div>
+        <div class="deck-stat">
+          <span class="deck-stat-num total">${totalNew}</span>
+          <span class="deck-stat-label">New to learn</span>
+        </div>
+        <div class="deck-stat">
+          <span class="deck-stat-num mastered">${mastered}</span>
+          <span class="deck-stat-label">Mastered</span>
+        </div>
+        <div class="deck-stat">
+          <span class="deck-stat-num" style="color:var(--ink-soft)">${DECK.length}</span>
+          <span class="deck-stat-label">Total cards</span>
+        </div>
+      </div>
+      ${seen > 0 ? `<button class="deck-reset" id="deckResetBtn">Reset all progress</button>` : ''}
+    </div>
+    <button class="deck-cta" id="deckStartBtn" ${canStart?'':'disabled'}>
+      ${canStart ? (due>0 ? `Study ${Math.min(due,MAX_SESSION)} due${totalNew>0 ? ` + ${Math.min(totalNew,NEW_PER_SESSION)} new` : ''}` : `Start with ${Math.min(totalNew,NEW_PER_SESSION)} new cards`) : 'All caught up ✓'}
+    </button>`;
+  root.appendChild(dash);
+
+  const startBtn = dash.querySelector('#deckStartBtn');
+  if(startBtn && canStart){
+    startBtn.addEventListener('click', () => {
+      const queue = pickQueue(DECK, deckState);
+      if(queue.length === 0) return;
+      deckSession = { queue, index:0, reviewed:0, newLearned:0, revealed:false, startNew: totalNew };
+      renderDeck();
+    });
+  }
+  const resetBtn = dash.querySelector('#deckResetBtn');
+  if(resetBtn){
+    resetBtn.addEventListener('click', () => {
+      if(confirm('Wipe all deck progress? Cards you\'ve learned will go back to "new".')){
+        deckState = { version:1, cards:{}, lastSession:0 };
+        saveDeckState(deckState);
+        renderDeck();
+      }
+    });
+  }
+}
+
+function renderDeckSession(root){
+  const s = deckSession;
+  if(s.index >= s.queue.length){
+    renderDeckDone(root);
+    return;
+  }
+  const card = s.queue[s.index];
+  const total = s.queue.length;
+  const pct = Math.round((s.index / total) * 100);
+  const shell = document.createElement('div');
+  shell.className = 'deck-session-shell';
+  shell.innerHTML = `
+    <div class="deck-progress">
+      <div class="deck-progress-bar"><div class="deck-progress-fill" style="width:${pct}%"></div></div>
+      <div class="deck-progress-text">Card ${s.index + 1} / ${total}</div>
+    </div>
+    <div class="deck-card">
+      <div class="deck-card-chips">
+        <span class="deck-cat-chip ${card.category}">${card.category === 'concept' ? 'Concept' : 'Bias'}</span>
+        <span class="deck-fam-chip">${card.familyLabel}</span>
+      </div>
+      <div class="deck-front">
+        <div>
+          ${card.emoji ? `<span class="deck-emoji">${card.emoji}</span>` : ''}
+          <h3>${card.front}</h3>
+        </div>
+      </div>
+      <div id="deckBackWrap"></div>
+      <div class="deck-actions" id="deckActionsWrap">
+        <button class="deck-reveal-btn" id="deckRevealBtn">Show answer</button>
+      </div>
+    </div>`;
+  root.appendChild(shell);
+
+  const reveal = () => {
+    s.revealed = true;
+    shell.querySelector('#deckBackWrap').innerHTML = `
+      <div class="deck-back">
+        ${card.back}
+        <a class="deck-back-link bias-link" href="${card.link}">Read the full entry →</a>
+      </div>`;
+    const missedMs = nextInterval(deckState, card.id, 'missed');
+    const goodMs   = nextInterval(deckState, card.id, 'good');
+    const easyMs   = nextInterval(deckState, card.id, 'easy');
+    shell.querySelector('#deckActionsWrap').outerHTML = `
+      <div class="deck-rating">
+        <button class="rate-btn rate-missed" data-r="missed">
+          <span class="rate-label">Missed</span>
+          <span class="rate-when">${formatInterval(missedMs)}</span>
+        </button>
+        <button class="rate-btn rate-good" data-r="good">
+          <span class="rate-label">Got it</span>
+          <span class="rate-when">${formatInterval(goodMs)}</span>
+        </button>
+        <button class="rate-btn rate-easy" data-r="easy">
+          <span class="rate-label">Easy</span>
+          <span class="rate-when">${formatInterval(easyMs)}</span>
+        </button>
+      </div>`;
+    shell.querySelectorAll('.rate-btn').forEach(b => {
+      b.addEventListener('click', () => {
+        const wasNew = !deckState.cards[card.id];
+        rateCard(deckState, card.id, b.dataset.r);
+        s.reviewed++;
+        if(wasNew) s.newLearned++;
+        s.index++;
+        s.revealed = false;
+        renderDeck();
+      });
+    });
+  };
+
+  shell.querySelector('#deckRevealBtn').addEventListener('click', reveal);
+
+  // Keyboard shortcuts: space to reveal, 1/2/3 to rate
+  const keyHandler = (e) => {
+    if(!document.body.contains(shell)) { document.removeEventListener('keydown', keyHandler); return; }
+    if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if(!s.revealed && (e.key === ' ' || e.key === 'Enter')){
+      e.preventDefault(); reveal();
+    } else if(s.revealed){
+      const map = { '1':'missed', '2':'good', '3':'easy' };
+      const r = map[e.key];
+      if(r){
+        e.preventDefault();
+        shell.querySelector(`.rate-btn[data-r="${r}"]`)?.click();
+      }
+    }
+  };
+  document.addEventListener('keydown', keyHandler);
+}
+
+function renderDeckDone(root){
+  const s = deckSession;
+  const done = document.createElement('div');
+  done.className = 'deck-done';
+  done.innerHTML = `
+    <div class="deck-done-emoji">🎉</div>
+    <h3>Session complete</h3>
+    <p>You showed up. That is the whole trick.</p>
+    <div class="summary">
+      <span><b>${s.reviewed}</b> cards reviewed</span>
+      <span><b>${s.newLearned}</b> newly learned</span>
+    </div>
+    <div class="deck-cta-row">
+      <button class="deck-cta secondary" id="deckAnother">Study another batch</button>
+    </div>`;
+  root.appendChild(done);
+  done.querySelector('#deckAnother').addEventListener('click', () => {
+    deckSession = null;
+    renderDeck();
+  });
+}
+
+renderDeck();
 </script>
 </body>
 </html>
