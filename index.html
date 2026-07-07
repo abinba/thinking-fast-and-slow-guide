@@ -233,6 +233,17 @@ h2{font-size:clamp(1.9rem,4vw,2.7rem);font-weight:900;letter-spacing:-.01em;marg
   text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px;font-weight:700;
 }
 @keyframes labfade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.bias-link{
+  color:var(--indigo);font-weight:800;text-decoration:underline;
+  text-decoration-thickness:2px;text-decoration-color:var(--marigold);
+  text-underline-offset:3px;transition:color .15s,text-decoration-color .15s;
+}
+.bias-link:hover{color:var(--flame);text-decoration-color:var(--flame)}
+.bias-item.flash, .term-card.flash{animation:linkflash 1.6s ease}
+@keyframes linkflash{
+  0%,15%{box-shadow:0 0 0 4px var(--marigold), var(--shadow-lift)}
+  100%{box-shadow:var(--shadow)}
+}
 
 /* ---------- bias library ---------- */
 .family-block{margin-bottom:34px}
@@ -415,9 +426,9 @@ footer p{color:#CFC6DA;font-size:.92rem;max-width:560px;margin:0 auto}
 
 <nav aria-label="Sections">
   <div class="nav-pill">
+    <a href="#lab">Lab</a>
     <a href="#terms">Concepts</a>
     <a href="#graph">Map</a>
-    <a href="#lab">Lab</a>
     <a href="#biases">Bias library</a>
     <a href="#quiz">Quiz</a>
     <a href="#math">Math corner</a>
@@ -453,18 +464,30 @@ footer p{color:#CFC6DA;font-size:.92rem;max-width:560px;margin:0 auto}
   </div>
 </header>
 
+<!-- ===== LAB ===== -->
+<section id="lab">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker k-marigold">01 · The lab</div>
+      <h2>Feel the bias, then read the theory</h2>
+      <p class="sec-lede">Five short interactive experiments — the same ones that made Kahneman and Tversky famous. Play first, then peek at the reveal. If you catch yourself falling for one, that's the whole point.</p>
+    </div>
+    <div class="lab-list" id="labRoot"></div>
+  </div>
+</section>
+
 <!-- ===== TERMINOLOGY ===== -->
 <section id="terms">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-kicker k-flame">01 · Vocabulary</div>
+      <div class="sec-kicker k-flame">02 · Vocabulary</div>
       <h2>The concepts, on one shelf</h2>
       <p class="sec-lede">Every big idea in the book, compressed to a card: what it is, why it matters, and which other ideas it's wired to. The colored tags are families — you'll see them again on the map below.</p>
     </div>
     <div class="term-grid" id="termGrid"></div>
 
     <div id="graph" class="sec-head" style="padding-top:20px">
-      <div class="sec-kicker k-flame">02 · The map</div>
+      <div class="sec-kicker k-flame">03 · The map</div>
       <h2>How it all connects</h2>
       <p class="sec-lede">Kahneman's book isn't a list of biases — it's one machine with many symptoms. Click any node to light up its neighbors and see why the wire exists.</p>
     </div>
@@ -481,18 +504,6 @@ footer p{color:#CFC6DA;font-size:.92rem;max-width:560px;margin:0 auto}
         <p class="graph-hint">☝ tap a node — e.g. start with WYSIATI, the spider at the center of the web.</p>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- ===== LAB ===== -->
-<section id="lab">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="sec-kicker k-marigold">03 · The lab</div>
-      <h2>Feel the bias, then read the theory</h2>
-      <p class="sec-lede">Five short interactive experiments — the same ones that made Kahneman and Tversky famous. Play first, then peek at the reveal. If you catch yourself falling for one, that's the whole point.</p>
-    </div>
-    <div class="lab-list" id="labRoot"></div>
   </div>
 </section>
 
@@ -678,7 +689,7 @@ const TERMS = [
 function renderTerms(){
   const grid = document.getElementById('termGrid');
   grid.innerHTML = TERMS.map(t=>`
-    <article class="term-card">
+    <article class="term-card" id="term-${t.id}">
       <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
         <h3>${t.name}</h3><span class="chip" style="flex-shrink:0">${t.ref}</span>
       </div>
@@ -1098,6 +1109,9 @@ const BIASES = [
 ]}
 ];
 
+function biasSlug(name){
+  return name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
 function renderBiases(){
   const root = document.getElementById('biasRoot');
   root.innerHTML = BIASES.map(f=>`
@@ -1105,7 +1119,7 @@ function renderBiases(){
       <div class="family-title"><span class="family-dot" style="background:${f.color}"></span>${f.fam}</div>
       <div class="bias-list">
         ${f.items.map((b,i)=>`
-        <div class="bias-item">
+        <div class="bias-item" id="bias-${biasSlug(b.name)}">
           <button class="bias-btn" aria-expanded="false">
             <span class="bias-emoji">${b.emoji}</span>
             <span><span class="bias-name">${b.name}</span><br><span class="bias-one">${b.one}</span></span>
@@ -1553,7 +1567,7 @@ function buildAnchoring(){
       `Your anchor was <strong>${anchor}</strong>. You estimated <strong>${guess}%</strong>.`,
       `<p>In Kahneman & Tversky's original 1974 experiment, subjects who saw <strong>${anchor}</strong> averaged around <strong>${yourGroupAvg}%</strong>. Subjects who saw <strong>${otherAnchor}</strong> averaged around <strong>${otherGroupAvg}%</strong> — a huge gap, from a number they knew was random.</p>
       <p>The correct answer, by the way, is roughly <strong>28%</strong>.</p>
-      <p><em>Why it works:</em> before you can dismiss an irrelevant number, your mind has already used it as a starting point for adjustment — and the adjustment is almost always too small. This is anchoring, and it works even when you're warned about it.</p>`,
+      <p><em>Why it works:</em> before you can dismiss an irrelevant number, your mind has already used it as a starting point for adjustment — and the adjustment is almost always too small. This is <a class="bias-link" href="#bias-anchoring">anchoring</a>, and it works even when you're warned about it.</p>`,
       'neutral');
   });
   return card;
@@ -1582,14 +1596,14 @@ function buildLinda(){
         reveal(card,
           `You picked B — welcome to the club of ~85%.`,
           `<p>Even in Kahneman's most sophisticated samples — including doctoral students in decision science — the majority pick B. But B <em>cannot</em> be more probable than A: every feminist bank teller <em>is</em> a bank teller. The set of X-and-Y is always smaller than the set of X.</p>
-          <p><em>Why it happens:</em> System 1 answers a different, easier question: "does the story sound like her?" Feminist-bank-teller resembles the description; plain bank teller does not. Representativeness quietly hijacks probability.</p>
+          <p><em>Why it happens:</em> <a class="bias-link" href="#term-s1">System 1</a> answers a different, easier question: "does the story sound like her?" Feminist-bank-teller resembles the description; plain bank teller does not. <a class="bias-link" href="#bias-representativeness-base-rate-neglect">Representativeness</a> quietly hijacks probability.</p>
           <p>This is the <strong>conjunction fallacy</strong>, and it survives being explained. That is the scary part.</p>`,
           'wrong');
       } else {
         reveal(card,
           `You picked A — bravo. You're in the ~15%.`,
           `<p>You resisted the pull of the story and applied the rule: adding a condition can only make something less probable, never more. Most people — including Kahneman's Stanford Business School PhDs — go the other way.</p>
-          <p><em>What just happened:</em> the story is designed to make "feminist bank teller" feel more <em>representative</em> of Linda than "bank teller." Representativeness feels like probability, but the two come apart whenever a category has a lot of members that don't fit the stereotype.</p>`,
+          <p><em>What just happened:</em> the story is designed to make "feminist bank teller" feel more <em>representative</em> of Linda than "bank teller." <a class="bias-link" href="#bias-representativeness-base-rate-neglect">Representativeness</a> feels like probability, but the two come apart whenever a category has a lot of members that don't fit the stereotype.</p>`,
           'right');
       }
     });
@@ -1650,7 +1664,7 @@ function buildFraming(){
       reveal(card, verdict,
         `<p>A and C are the <em>same</em> outcome. B and D are the <em>same</em> outcome. Only the framing changed — "saved" vs "die."</p>
         <p>In Kahneman & Tversky's original: <strong>72%</strong> picked A in the "saved" frame; <strong>78%</strong> picked D in the "die" frame. When outcomes are described as gains, people become <em>risk-averse</em> and take the sure thing. When identical outcomes are described as losses, people become <em>risk-seeking</em> and gamble to avoid the sure loss.</p>
-        <p><em>Why it matters:</em> this asymmetry is the beating heart of <strong>prospect theory</strong> — the reason "10% off" and "no surcharge" sell differently, why insurance works, and why the same policy polls differently depending on whether you talk about "lives saved" or "deaths avoided."</p>`,
+        <p><em>Why it matters:</em> this asymmetry is the beating heart of <a class="bias-link" href="#term-prospect">prospect theory</a> — the reason "10% off" and "no surcharge" sell differently, why insurance works, and why the same policy polls differently depending on whether you talk about "lives saved" or "deaths avoided." See also: <a class="bias-link" href="#bias-framing-effect">framing effect</a> and <a class="bias-link" href="#bias-loss-aversion">loss aversion</a>.</p>`,
         tone);
     });
   });
@@ -1714,7 +1728,7 @@ function buildCRT(){
       <ul style="margin:8px 0 4px 18px">
         ${rows.map(r=>`<li style="margin-bottom:6px"><strong>Q${r.n}:</strong> ${r.right ? '<span style="color:#0E7C74">correct</span>' : r.trap ? '<span style="color:#E84A7F">fell for the intuitive trap</span>' : 'missed'} — right answer: ${r.correct}${r.right ? '' : `. <em>Intuitive trap:</em> ${r.intuitive}.`}</li>`).join('')}
       </ul>
-      <p><em>What this test measures:</em> not IQ, but willingness to override the answer System 1 offers. High CRT scorers are more patient, less overconfident, less susceptible to framing — and they earn slightly higher expected value in gambling games. Reflection is a habit.</p>`,
+      <p><em>What this test measures:</em> not IQ, but willingness to override the answer <a class="bias-link" href="#term-s1">System 1</a> offers. High CRT scorers are more patient, less overconfident, less susceptible to framing — and they earn slightly higher expected value in gambling games. <a class="bias-link" href="#term-s2">System 2</a> reflection is a habit.</p>`,
       tone);
   });
   return card;
@@ -1744,13 +1758,13 @@ function buildAvailability(){
           `You picked <strong>starts with R</strong> — the majority answer, and the wrong one.`,
           `<p>In English, roughly <strong>three times as many</strong> words have R in the third position as start with R. Tversky and Kahneman ran this experiment with K, L, N, R and V — all more common in position 3 than position 1 — and the majority always picked position 1.</p>
           <p><em>Why:</em> try to list words starting with R (<em>road, run, rabbit, red…</em>). Easy. Now try to list words with R as the third letter (<em>car — no, that's second. Bird? No, third. Care? Yes.</em>). Hard. Words in memory are indexed by their first letter, not their third. Ease of retrieval feels like frequency.</p>
-          <p>This is the <strong>availability heuristic</strong>. It's why plane crashes feel common right after one is in the news, and why sharks feel deadlier than cows (cows kill more people annually).</p>`,
+          <p>This is the <a class="bias-link" href="#bias-availability-heuristic">availability heuristic</a>. It's why plane crashes feel common right after one is in the news, and why sharks feel deadlier than cows (cows kill more people annually).</p>`,
           'wrong');
       } else {
         reveal(card,
           `You picked <strong>R as the third letter</strong> — correct, and unusual.`,
           `<p>Right. In English, roughly three times as many words have R in the third position as start with R. Most people say the opposite because words are indexed in memory by their first letter, so starts-with-R examples come to mind instantly and third-position-R examples don't.</p>
-          <p>The intuitive answer is a report on <em>retrieval fluency</em>, not <em>frequency</em>. That confusion is the <strong>availability heuristic</strong>, and it colors judgments about risk, crime, celebrity divorce, and every "how often does X happen" question.</p>`,
+          <p>The intuitive answer is a report on <em>retrieval fluency</em>, not <em>frequency</em>. That confusion is the <a class="bias-link" href="#bias-availability-heuristic">availability heuristic</a>, and it colors judgments about risk, crime, celebrity divorce, and every "how often does X happen" question.</p>`,
           'right');
       }
     });
@@ -1766,6 +1780,39 @@ function renderLab(){
     .forEach(fn => root.appendChild(fn()));
 }
 renderLab();
+
+/* ---------- cross-section links: open + scroll + flash ---------- */
+function openTarget(id){
+  const el = document.getElementById(id);
+  if(!el) return false;
+  if(el.classList.contains('bias-item') && !el.classList.contains('open')){
+    el.classList.add('open');
+    const btn = el.querySelector('.bias-btn');
+    if(btn) btn.setAttribute('aria-expanded','true');
+  }
+  el.scrollIntoView({behavior:'smooth', block:'start'});
+  el.classList.remove('flash');
+  void el.offsetWidth; // reflow so animation restarts
+  el.classList.add('flash');
+  return true;
+}
+document.addEventListener('click', e => {
+  const a = e.target.closest('a.bias-link');
+  if(!a) return;
+  const href = a.getAttribute('href') || '';
+  if(!href.startsWith('#')) return;
+  if(openTarget(href.slice(1))){
+    e.preventDefault();
+    history.replaceState(null, '', href);
+  }
+});
+window.addEventListener('hashchange', ()=>{
+  const id = location.hash.slice(1);
+  if(id) openTarget(id);
+});
+if(location.hash){
+  setTimeout(()=> openTarget(location.hash.slice(1)), 250);
+}
 </script>
 </body>
 </html>
