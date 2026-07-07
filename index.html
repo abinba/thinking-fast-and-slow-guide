@@ -1241,16 +1241,14 @@ function renderTerms(){
     <article class="term-card" id="term-${t.id}">
       <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
         <h3>${t.name}</h3>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex-shrink:0">
-          <span class="chip">${t.ref}</span>
-          ${libLink}
-        </div>
+        <span class="chip" style="flex-shrink:0">${t.ref}</span>
       </div>
       <p>${t.def}</p>
       <div class="term-why">${t.why}</div>
       <div class="tag-row">
         <span class="tag ${FAM[t.fam].cls}">${FAM[t.fam].label}</span>
         ${t.links.slice(0,3).map(l=>{const n=TERMS.find(x=>x.id===l);return n?`<a class="tag tag-link" href="#term-${n.id}">${n.name}</a>`:''}).join('')}
+        ${libLink}
         ${progBtnHTML('term-' + t.id)}
       </div>
     </article>`;
