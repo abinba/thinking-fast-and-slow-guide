@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thinking, Fast and Slow — A Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400;9..144,600;9..144,900,100&family=Nunito+Sans:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FFF6E9;
+  --paper-deep:#FCEDD5;
+  --ink:#2A2433;
+  --ink-soft:#5C5468;
+  --flame:#FF6B2B;      /* System 1 */
+  --marigold:#FFC145;
+  --indigo:#3D4EA1;     /* System 2 */
+  --indigo-deep:#2B3672;
+  --teal:#12968F;
+  --rose:#E84A7F;
+  --card:#FFFFFF;
+  --shadow:0 10px 30px rgba(61,42,20,.10);
+  --shadow-lift:0 16px 40px rgba(61,42,20,.16);
+  --radius:22px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+body{
+  font-family:'Nunito Sans',system-ui,sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  line-height:1.65;
+  overflow-x:hidden;
+}
+h1,h2,h3,.display{font-family:'Fraunces',Georgia,serif}
+.mono{font-family:'Space Mono',monospace}
+img,svg{max-width:100%}
+button{font-family:inherit;cursor:pointer}
+a{color:var(--indigo)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 22px}
+
+/* ---------- nav ---------- */
+nav{
+  position:sticky;top:12px;z-index:50;display:flex;justify-content:center;padding:0 12px;
+}
+.nav-pill{
+  display:flex;gap:4px;flex-wrap:wrap;justify-content:center;
+  background:rgba(255,255,255,.85);backdrop-filter:blur(8px);
+  border:2px solid var(--ink);border-radius:999px;padding:6px 10px;box-shadow:var(--shadow);
+}
+.nav-pill a{
+  text-decoration:none;color:var(--ink);font-weight:700;font-size:.85rem;
+  padding:6px 12px;border-radius:999px;transition:background .2s,color .2s;white-space:nowrap;
+}
+.nav-pill a:hover,.nav-pill a:focus-visible{background:var(--ink);color:var(--paper)}
+:focus-visible{outline:3px solid var(--flame);outline-offset:2px}
+
+/* ---------- hero ---------- */
+header{position:relative;padding:70px 0 90px;overflow:hidden}
+.hero-split{
+  position:absolute;inset:0;z-index:0;
+  background:linear-gradient(104deg,#FFE9D2 0 55%,#E3E7FA 55.2% 100%);
+}
+.hero-blob{position:absolute;z-index:0;opacity:.55}
+.hero-inner{position:relative;z-index:2;display:grid;grid-template-columns:1fr;gap:26px;text-align:center}
+.eyebrow{
+  display:inline-block;font-family:'Space Mono',monospace;font-size:.78rem;letter-spacing:.14em;
+  text-transform:uppercase;background:var(--ink);color:var(--paper);padding:5px 14px;border-radius:999px;
+}
+h1{
+  font-size:clamp(2.4rem,6vw,4.4rem);font-weight:900;line-height:1.05;letter-spacing:-.02em;
+}
+h1 .fast{color:var(--flame);font-style:italic}
+h1 .slow{color:var(--indigo)}
+.hero-sub{max-width:640px;margin:0 auto;font-size:1.12rem;color:var(--ink-soft)}
+.hero-mascots{display:flex;justify-content:center;gap:clamp(20px,8vw,90px);align-items:flex-end;margin-top:10px}
+.mascot-card{display:flex;flex-direction:column;align-items:center;gap:8px}
+.speech{
+  background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:8px 14px;
+  font-weight:700;font-size:.9rem;position:relative;box-shadow:var(--shadow);max-width:220px;
+}
+.speech::after{
+  content:"";position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);
+  border:6px solid transparent;border-top-color:var(--ink);
+}
+.bob{animation:bob 3.4s ease-in-out infinite}
+.bob.delay{animation-delay:1.7s}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+
+/* ---------- sections ---------- */
+section{padding:84px 0}
+section:nth-of-type(even){background:var(--paper-deep)}
+.sec-head{max-width:720px;margin-bottom:42px}
+.sec-kicker{font-family:'Space Mono',monospace;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700}
+.sec-kicker.k-flame{color:var(--flame)} .sec-kicker.k-indigo{color:var(--indigo)}
+.sec-kicker.k-teal{color:var(--teal)} .sec-kicker.k-rose{color:var(--rose)}
+h2{font-size:clamp(1.9rem,4vw,2.7rem);font-weight:900;letter-spacing:-.01em;margin:8px 0 12px}
+.sec-lede{color:var(--ink-soft);font-size:1.06rem}
+
+/* ---------- terminology ---------- */
+.term-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin-bottom:56px}
+.term-card{
+  background:var(--card);border:2px solid var(--ink);border-radius:var(--radius);
+  padding:18px 18px 16px;box-shadow:var(--shadow);transition:transform .18s;
+  display:flex;flex-direction:column;gap:8px;
+}
+.term-card:hover{transform:translateY(-4px) rotate(-.4deg)}
+.term-card h3{font-size:1.12rem;font-weight:900}
+.term-card p{font-size:.92rem;color:var(--ink-soft)}
+.term-why{font-size:.85rem;font-weight:700;color:var(--ink)}
+.term-why::before{content:"→ ";color:var(--flame)}
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:8px}
+.tag{
+  font-family:'Space Mono',monospace;font-size:.68rem;padding:3px 9px;border-radius:999px;
+  border:1.5px solid currentColor;font-weight:700;
+}
+.t-core{color:var(--flame)} .t-judge{color:var(--indigo)} .t-choice{color:var(--rose)}
+.t-memory{color:var(--teal)} .t-stat{color:#8a6a00}
+
+/* ---------- graph ---------- */
+.graph-shell{
+  background:var(--card);border:2px solid var(--ink);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:20px;overflow:hidden;
+}
+.graph-scroll{overflow-x:auto}
+#conceptGraph{min-width:760px;display:block;margin:0 auto}
+.gnode{cursor:pointer}
+.gnode circle{stroke:var(--ink);stroke-width:2;transition:opacity .2s, r .2s}
+.gnode text{font-family:'Nunito Sans',sans-serif;font-weight:800;font-size:12.5px;fill:var(--ink);pointer-events:none}
+.gedge{stroke:#C9BBAE;stroke-width:2;transition:opacity .2s, stroke .2s}
+.dim{opacity:.14}
+.edge-hot{stroke:var(--ink);stroke-width:3}
+.graph-info{
+  margin-top:16px;border-top:2px dashed #E4D6C3;padding-top:16px;min-height:76px;
+}
+.graph-info h3{font-size:1.15rem;margin-bottom:4px}
+.graph-info p{color:var(--ink-soft);font-size:.95rem}
+.graph-hint{font-family:'Space Mono',monospace;font-size:.8rem;color:var(--ink-soft)}
+
+/* ---------- bias library ---------- */
+.family-block{margin-bottom:34px}
+.family-title{
+  display:flex;align-items:center;gap:12px;font-size:1.3rem;font-weight:900;margin-bottom:14px;
+}
+.family-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--ink);flex:none}
+.bias-list{display:flex;flex-direction:column;gap:12px}
+.bias-item{
+  background:var(--card);border:2px solid var(--ink);border-radius:18px;box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.bias-btn{
+  width:100%;background:none;border:none;text-align:left;display:flex;align-items:center;gap:14px;
+  padding:16px 18px;font-size:1rem;
+}
+.bias-btn:hover{background:#FFF3E2}
+.bias-emoji{
+  width:44px;height:44px;flex:none;border-radius:14px;border:2px solid var(--ink);
+  display:flex;align-items:center;justify-content:center;font-size:1.35rem;background:var(--paper);
+}
+.bias-name{font-weight:900;font-family:'Fraunces',serif;font-size:1.08rem}
+.bias-one{color:var(--ink-soft);font-size:.9rem}
+.bias-caret{margin-left:auto;font-weight:900;transition:transform .25s;flex:none}
+.bias-item.open .bias-caret{transform:rotate(90deg)}
+.bias-body{display:none;padding:0 18px 20px 76px;animation:fadein .3s ease}
+.bias-item.open .bias-body{display:block}
+@keyframes fadein{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.bias-body h4{font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;font-family:'Space Mono',monospace;margin:16px 0 6px;color:var(--ink-soft)}
+.bias-body ul{padding-left:20px;color:var(--ink-soft)}
+.bias-body li{margin-bottom:6px;font-size:.95rem}
+.exp{
+  background:var(--paper);border:1.5px dashed var(--ink-soft);border-radius:12px;
+  padding:10px 14px;margin-bottom:8px;font-size:.92rem;
+}
+.exp b{display:block}
+.exp span{color:var(--ink-soft)}
+@media(max-width:640px){.bias-body{padding-left:18px}}
+
+/* ---------- quiz ---------- */
+.quiz-shell{
+  background:var(--card);border:2px solid var(--ink);border-radius:var(--radius);
+  box-shadow:var(--shadow-lift);padding:clamp(20px,4vw,38px);max-width:820px;margin:0 auto;
+  position:relative;
+}
+.quiz-progress{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.qdot{width:22px;height:8px;border-radius:99px;background:#EADBC6;border:1.5px solid var(--ink)}
+.qdot.done-right{background:var(--teal)}
+.qdot.done-wrong{background:var(--rose)}
+.qdot.now{background:var(--marigold)}
+.quiz-title{font-size:1.45rem;font-weight:900;margin-bottom:10px}
+.quiz-story{color:var(--ink);font-size:1.0rem;margin-bottom:8px}
+.quiz-story p{margin-bottom:12px}
+.quiz-q{font-weight:800;margin:14px 0 16px;font-size:1.05rem}
+.quiz-opts{display:grid;gap:10px}
+.opt{
+  background:var(--paper);border:2px solid var(--ink);border-radius:14px;padding:12px 16px;
+  text-align:left;font-size:.98rem;font-weight:700;transition:transform .12s, background .15s;
+}
+.opt:hover:not(:disabled){transform:translateX(4px);background:#FFEFD8}
+.opt:disabled{cursor:default}
+.opt.right{background:#D9F2EE;border-color:var(--teal)}
+.opt.wrong{background:#FBE0EA;border-color:var(--rose)}
+.quiz-feedback{
+  display:none;margin-top:18px;border-radius:16px;padding:16px 18px;border:2px solid var(--ink);
+  background:var(--paper-deep);animation:fadein .3s ease;
+}
+.quiz-feedback.show{display:flex;gap:14px;align-items:flex-start}
+.quiz-feedback svg{flex:none}
+.fb-verdict{font-weight:900;font-family:'Fraunces',serif;font-size:1.05rem;margin-bottom:4px}
+.fb-text{font-size:.95rem;color:var(--ink-soft)}
+.quiz-next{
+  margin-top:18px;background:var(--ink);color:var(--paper);border:2px solid var(--ink);
+  border-radius:999px;padding:11px 26px;font-weight:800;font-size:.95rem;display:none;
+}
+.quiz-next.show{display:inline-block}
+.quiz-next:hover{background:var(--flame);border-color:var(--flame)}
+.quiz-final{text-align:center;padding:20px 0}
+.quiz-final .big{font-size:3.2rem;font-weight:900;font-family:'Fraunces',serif}
+.quiz-final .rank{font-size:1.4rem;font-weight:900;color:var(--flame);margin:6px 0 10px;font-family:'Fraunces',serif}
+.quiz-restart{
+  background:var(--flame);color:#fff;border:2px solid var(--ink);border-radius:999px;
+  padding:11px 26px;font-weight:800;margin-top:14px;
+}
+
+/* ---------- math ---------- */
+.math-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.math-card{
+  background:var(--card);border:2px solid var(--ink);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:22px;display:flex;flex-direction:column;gap:10px;
+}
+.math-card h3{font-size:1.25rem;font-weight:900}
+.formula{
+  font-family:'Space Mono',monospace;font-size:.92rem;background:var(--ink);color:#FFE9C9;
+  border-radius:12px;padding:12px 16px;overflow-x:auto;white-space:nowrap;
+}
+.math-card h4{font-family:'Space Mono',monospace;font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft);margin-top:6px}
+.math-card p{font-size:.94rem;color:var(--ink-soft)}
+.math-card .hook{color:var(--ink);font-weight:700;font-size:.95rem}
+.curve-card{grid-column:1/-1}
+.curve-flex{display:flex;gap:26px;flex-wrap:wrap;align-items:center}
+.curve-flex svg{flex:1 1 320px}
+.curve-controls{flex:1 1 260px}
+input[type=range]{width:100%;accent-color:var(--flame)}
+.curve-read{
+  font-family:'Space Mono',monospace;font-size:.88rem;background:var(--paper);border:2px dashed var(--ink-soft);
+  border-radius:12px;padding:12px;margin-top:12px;
+}
+.curve-read b.gain{color:var(--teal)} .curve-read b.loss{color:var(--rose)}
+
+/* ---------- roadmap ---------- */
+.roadmap{position:relative;max-width:760px;margin:0 auto;padding-left:34px}
+.roadmap::before{
+  content:"";position:absolute;left:12px;top:8px;bottom:8px;width:0;
+  border-left:3px dashed var(--ink-soft);
+}
+.stop{position:relative;margin-bottom:30px}
+.stop::before{
+  content:"";position:absolute;left:-30px;top:6px;width:18px;height:18px;border-radius:50%;
+  border:3px solid var(--ink);background:var(--stopcolor,var(--flame));
+}
+.stop-card{
+  background:var(--card);border:2px solid var(--ink);border-radius:18px;box-shadow:var(--shadow);
+  padding:18px 20px;
+}
+.stop-card h3{font-size:1.15rem;font-weight:900;margin-bottom:6px}
+.stop-card p{font-size:.93rem;color:var(--ink-soft);margin-bottom:8px}
+.stop-card ul{padding-left:18px;font-size:.93rem;color:var(--ink-soft)}
+.stop-card li{margin-bottom:4px}
+.stop-card li b{color:var(--ink)}
+
+/* ---------- footer ---------- */
+footer{padding:56px 0 70px;text-align:center;background:var(--ink);color:var(--paper)}
+footer .display{font-size:1.5rem;margin-bottom:8px}
+footer p{color:#CFC6DA;font-size:.92rem;max-width:560px;margin:0 auto}
+</style>
+<style>
+.chip{font-family:'Space Mono',monospace;font-size:.66rem;border:1.5px solid var(--ink-soft);color:var(--ink-soft);border-radius:999px;padding:2px 9px;white-space:nowrap;font-weight:700}
+.bias-tip{background:#FFF3D6;border:2px solid var(--marigold);border-radius:14px;padding:12px 16px;font-size:.93rem;margin-top:14px;color:var(--ink-soft)}
+.bias-tip b{color:var(--ink)}
+.glegend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;font-size:.8rem;font-weight:800}
+.glegend span{display:flex;align-items:center;gap:6px}
+.glegend i{width:13px;height:13px;border-radius:50%;border:2px solid var(--ink);display:inline-block}
+.gnode text{paint-order:stroke;stroke:#FFFFFF;stroke-width:3px;stroke-linejoin:round}
+</style>
+</head>
+<body>
+
+<!-- ===== mascot defs ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="mascot-s1">
+      <path d="M60 8 C92 6 112 30 110 62 C108 96 88 114 58 112 C26 110 8 90 10 58 C12 26 30 10 60 8 Z" fill="#FF6B2B" stroke="#2A2433" stroke-width="3"/>
+      <circle cx="44" cy="52" r="13" fill="#fff" stroke="#2A2433" stroke-width="2.5"/>
+      <circle cx="78" cy="50" r="13" fill="#fff" stroke="#2A2433" stroke-width="2.5"/>
+      <circle cx="47" cy="54" r="5" fill="#2A2433"/>
+      <circle cx="81" cy="52" r="5" fill="#2A2433"/>
+      <path d="M42 78 Q60 96 80 76" fill="none" stroke="#2A2433" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M96 14 L104 2 L101 14 L110 12 L98 26 L100 16 Z" fill="#FFC145" stroke="#2A2433" stroke-width="2"/>
+      <path d="M22 30 Q28 22 36 26" fill="none" stroke="#2A2433" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+    <g id="mascot-s2">
+      <rect x="12" y="14" width="96" height="96" rx="26" fill="#3D4EA1" stroke="#2A2433" stroke-width="3"/>
+      <circle cx="44" cy="54" r="14" fill="#fff" stroke="#2A2433" stroke-width="3"/>
+      <circle cx="78" cy="54" r="14" fill="#fff" stroke="#2A2433" stroke-width="3"/>
+      <line x1="58" y1="54" x2="64" y2="54" stroke="#2A2433" stroke-width="3"/>
+      <path d="M34 50 a14 14 0 0 1 20 0" fill="#3D4EA1" stroke="none"/>
+      <path d="M68 50 a14 14 0 0 1 20 0" fill="#3D4EA1" stroke="none"/>
+      <circle cx="46" cy="58" r="4" fill="#2A2433"/>
+      <circle cx="80" cy="58" r="4" fill="#2A2433"/>
+      <line x1="46" y1="84" x2="74" y2="84" stroke="#2A2433" stroke-width="3.5" stroke-linecap="round"/>
+      <g>
+        <rect x="88" y="88" width="22" height="20" rx="4" fill="#FFF6E9" stroke="#2A2433" stroke-width="2.5"/>
+        <path d="M110 92 q8 2 0 10" fill="none" stroke="#2A2433" stroke-width="2.5"/>
+        <path d="M94 84 q2 -6 0 -8 M101 84 q2 -6 0 -8" fill="none" stroke="#2A2433" stroke-width="2" stroke-linecap="round"/>
+      </g>
+    </g>
+  </defs>
+</svg>
+
+<nav aria-label="Sections">
+  <div class="nav-pill">
+    <a href="#terms">Concepts</a>
+    <a href="#graph">Map</a>
+    <a href="#biases">Bias library</a>
+    <a href="#quiz">Quiz</a>
+    <a href="#math">Math corner</a>
+    <a href="#roadmap">Go deeper</a>
+  </div>
+</nav>
+
+<header>
+  <div class="hero-split"></div>
+  <svg class="hero-blob" style="left:-60px;top:30px" width="260" height="260" viewBox="0 0 200 200" aria-hidden="true">
+    <path d="M100 10 C150 5 190 45 185 100 C180 155 145 192 95 188 C45 184 10 150 12 98 C14 46 50 15 100 10Z" fill="#FFC145"/>
+  </svg>
+  <svg class="hero-blob" style="right:-70px;bottom:20px" width="240" height="240" viewBox="0 0 200 200" aria-hidden="true">
+    <rect x="15" y="15" width="170" height="170" rx="48" fill="#B9C3F2" transform="rotate(12 100 100)"/>
+  </svg>
+
+  <div class="wrap hero-inner">
+    <div><span class="eyebrow">A companion to Daniel Kahneman's book</span></div>
+    <h1>Thinking, <span class="fast">Fast</span> and <span class="slow">Slow</span><br>— the field guide</h1>
+    <p class="hero-sub">Two characters run your mind: one blurts, one broods. This site is a map of their tricks — the concepts, the biases, the experiments, and the math — so the book sticks long after you close it. It won't replace the book. It'll make it unforgettable.</p>
+    <div class="hero-mascots">
+      <div class="mascot-card">
+        <div class="speech">I already know the answer!!</div>
+        <svg class="bob" width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="System 1, a fast orange blob"><use href="#mascot-s1"/></svg>
+        <strong>System 1 · fast</strong>
+      </div>
+      <div class="mascot-card">
+        <div class="speech">…give me a minute. And coffee.</div>
+        <svg class="bob delay" width="120" height="120" viewBox="0 0 120 124" role="img" aria-label="System 2, a slow blue square with glasses and coffee"><use href="#mascot-s2"/></svg>
+        <strong>System 2 · slow</strong>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== TERMINOLOGY ===== -->
+<section id="terms">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker k-flame">01 · Vocabulary</div>
+      <h2>The concepts, on one shelf</h2>
+      <p class="sec-lede">Every big idea in the book, compressed to a card: what it is, why it matters, and which other ideas it's wired to. The colored tags are families — you'll see them again on the map below.</p>
+    </div>
+    <div class="term-grid" id="termGrid"></div>
+
+    <div id="graph" class="sec-head" style="padding-top:20px">
+      <div class="sec-kicker k-flame">02 · The map</div>
+      <h2>How it all connects</h2>
+      <p class="sec-lede">Kahneman's book isn't a list of biases — it's one machine with many symptoms. Click any node to light up its neighbors and see why the wire exists.</p>
+    </div>
+    <div class="graph-shell">
+      <div class="glegend">
+  <span><i style="background:#FF6B2B"></i>core machinery</span>
+  <span><i style="background:#3D4EA1"></i>judgment</span>
+  <span><i style="background:#C89000"></i>statistics</span>
+  <span><i style="background:#E84A7F"></i>choices &amp; risk</span>
+  <span><i style="background:#12968F"></i>memory &amp; selves</span>
+</div>
+<div class="graph-scroll"><svg id="conceptGraph" viewBox="0 0 960 745" role="img" aria-label="Concept map of Thinking Fast and Slow"></svg></div>
+      <div class="graph-info" id="graphInfo">
+        <p class="graph-hint">☝ tap a node — e.g. start with WYSIATI, the spider at the center of the web.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BIAS LIBRARY ===== -->
+<section id="biases">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker k-indigo">03 · The library</div>
+      <h2>Biases, with receipts</h2>
+      <p class="sec-lede">Each entry hides its full story until you ask — a description, vivid examples, and the actual experiments behind it. Click to drill down.</p>
+    </div>
+    <div id="biasRoot"></div>
+  </div>
+</section>
+
+<!-- ===== QUIZ ===== -->
+<section id="quiz">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker k-rose">04 · The gym</div>
+      <h2>Spot the bias</h2>
+      <p class="sec-lede">Thirteen short stories. Somewhere in each one, a mind quietly goes off the rails. Your job: name the failure. Careful — the wrong options are chosen to be <em>almost</em> right.</p>
+    </div>
+    <div class="quiz-shell" id="quizShell"></div>
+  </div>
+</section>
+
+<!-- ===== MATH ===== -->
+<section id="math">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker k-teal">05 · The engine room</div>
+      <h2>The math under the hood</h2>
+      <p class="sec-lede">Kahneman's psychology stands on a small set of statistical ideas. Master these five and half the biases in the library become obvious in advance.</p>
+    </div>
+    <div class="math-grid" id="mathGrid"></div>
+  </div>
+</section>
+
+<!-- ===== ROADMAP ===== -->
+<section id="roadmap">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker k-flame">06 · Go deeper</div>
+      <h2>Behavioral economics, the scenic route</h2>
+      <p class="sec-lede">Behavioral economics is what happened when psychologists proved that real people — <em>Humans</em> — don't behave like the perfectly rational <em>Econs</em> in textbook models. Kahneman, a psychologist, won the Nobel in economics for it. Here's a path from this book to the whole field.</p>
+    </div>
+    <div class="roadmap" id="roadmapRoot"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="display">Nothing in life is as important as you think it is, while you are thinking about it.</div>
+    <p>— the focusing illusion, and also a decent reason to close this tab and go read the actual book. It's better than any summary, including this one.</p>
+  </div>
+</footer>
+<script>
+/* ================= DATA: TERMS + GRAPH ================= */
+const FAM = {
+  core:   {cls:'t-core',   label:'core machinery', color:'#FF6B2B'},
+  judge:  {cls:'t-judge',  label:'judgment',       color:'#3D4EA1'},
+  choice: {cls:'t-choice', label:'choices & risk', color:'#E84A7F'},
+  memory: {cls:'t-memory', label:'memory & selves',color:'#12968F'},
+  stat:   {cls:'t-stat',   label:'statistics',     color:'#C89000'}
+};
+
+const TERMS = [
+{id:'s1', name:'System 1', fam:'core', ref:'Part I \u00b7 ch. 1',
+ def:'The fast, automatic mode of thought: it recognizes faces, completes \u201cbread and\u2026\u201d, hears hostility in a voice, and drives your car down an empty road \u2014 all without effort or any sense of authorship. It works by association and pattern-matching, runs continuously, cannot be switched off, and delivers its conclusions as feelings of truth rather than as arguments.',
+ why:'It\u2019s both the hero and the villain of the book: brilliantly efficient in familiar territory, systematically wrong about statistics, samples, and its own reliability. Nearly every bias below is System 1 doing its normal job outside its competence zone.',
+ links:['s2','heuristic','ease','wysiati','remembering','associative','expertintuition']},
+{id:'s2', name:'System 2', fam:'core', ref:'Part I \u00b7 ch. 1\u20133',
+ def:'The slow, effortful mode: logic, computation, comparison, self-control. It can follow rules, check arguments, and overrule impulses \u2014 but every act of attention draws on a limited budget, so it defaults to the cheapest move: endorsing whatever System 1 already believes. Kahneman\u2019s nickname for it is \u201cthe lazy controller.\u201d',
+ why:'You experience yourself as System 2 \u2014 the reasoning author of your choices \u2014 while most of the deciding happens upstream. The book\u2019s practical skill is recognizing the situations where System 2 must be dragged to its desk.',
+ links:['s1','smallnumbers','econs','egodepletion']},
+{id:'associative', name:'Associative machine', fam:'core', ref:'Part I \u00b7 ch. 4',
+ def:'Memory is a vast network of linked ideas \u2014 \u201cbanana\u201d activates yellow, fruit, monkey, potassium \u2014 and activation spreads automatically, invisibly, in every direction at once. System 1 uses this cascade to assemble a coherent interpretation of each moment before you\u2019ve consciously registered anything.',
+ why:'This machinery is why priming works, why coherent stories feel true, and why you literally cannot see a word in your own language without reading it. Thinking starts before \u201cyou\u201d do.',
+ links:['s1','ease','priming']},
+{id:'ease', name:'Cognitive ease', fam:'core', ref:'Part I \u00b7 ch. 5\u20136',
+ def:'A gauge in your head running between \u201ceasy\u201d and \u201cstrained.\u201d Familiar ideas, clean fonts, rhymes, repetition and a good mood all push toward ease \u2014 and whatever feels easy also feels true, safe, and likable. Strain summons System 2: you become more vigilant, more analytical, and less creative.',
+ why:'Repetition is persuasion\u2019s cheapest trick \u2014 a statement heard three times feels truer with zero new evidence. Marketers, propagandists, and your own long-rehearsed beliefs all exploit the same gauge.',
+ links:['s1','associative']},
+{id:'priming', name:'Priming', fam:'core', ref:'Part I \u00b7 ch. 4',
+ def:'Recent exposure to an idea silently tilts what you notice, feel and do next: EAT makes you complete SO_P as SOUP; money cues nudge people toward self-reliance and selfishness; in the famous study, words about old age slowed students\u2019 walking.',
+ why:'It punctures the illusion that judgments start from neutral. Honest footnote: several headline priming effects \u2014 including the slow-walking study \u2014 later struggled to replicate, so hold the flashy specifics loosely and the underlying mechanism (spreading activation) firmly.',
+ links:['associative','anchoring']},
+{id:'heuristic', name:'Heuristics', fam:'core', ref:'Part II \u00b7 intro',
+ def:'Mental shortcuts: when a question is hard, System 1 answers a related, easier one and serves the result with unearned confidence. Heuristics are usually fast, frugal and right \u2014 the book\u2019s central point is that their errors are systematic, not random, and therefore predictable.',
+ why:'Bias isn\u2019t stupidity; it\u2019s the fingerprint of a specific shortcut. Learn the shortcut and you can predict the error \u2014 in yourself, your team, and every market you touch.',
+ links:['s1','substitution','availability','representativeness','anchoring']},
+{id:'substitution', name:'Substitution', fam:'core', ref:'Part I \u00b7 ch. 9',
+ def:'The mechanism inside most heuristics: \u201cIs this investment sound?\u201d quietly becomes \u201cDo I like this company\u2019s story?\u201d; \u201cHow happy is my life?\u201d becomes \u201cWhat\u2019s my mood right now?\u201d The swap is invisible \u2014 the easy answer arrives labeled as the answer to the hard question.',
+ why:'Once you know the trick you can catch it: when an answer to a genuinely hard question arrives suspiciously fast, ask which easier question you actually just answered.',
+ links:['heuristic','affect']},
+{id:'affect', name:'Affect heuristic', fam:'judge', ref:'Part I \u00b7 ch. 9',
+ def:'The ultimate substitution: \u201cWhat do I think about it?\u201d gets answered by \u201cHow do I feel about it?\u201d Liking something inflates its perceived benefits and shrinks its perceived risks \u2014 give people an argument for a technology\u2019s benefits and their estimate of its risks drops, with no risk information provided at all.',
+ why:'Your position on nuclear power, crypto, your own startup, or that one framework you hate is \u2014 by default \u2014 a feeling wearing an analysis costume.',
+ links:['substitution']},
+{id:'wysiati', name:'WYSIATI', fam:'core', ref:'Part I \u00b7 ch. 7\u20138',
+ def:'\u201cWhat You See Is All There Is\u201d: System 1 builds the most coherent story possible from currently available information and never flags what\u2019s missing \u2014 absent evidence simply does not exist for it. Confidence tracks the story\u2019s coherence, not the evidence\u2019s quality, which is why less information can produce more certainty.',
+ why:'The master bug: it powers the halo effect, overconfidence, framing and base-rate neglect simultaneously. The antidote is one deliberate System 2 question: \u201cwhat would I need to know to be right \u2014 and do I have it?\u201d',
+ links:['s1','halo','framing','overconf','optimism']},
+{id:'halo', name:'Halo effect', fam:'judge', ref:'Part I \u00b7 ch. 7',
+ def:'One salient trait \u2014 confidence, beauty, a single great performance \u2014 spills into judgments of unrelated traits, and early impressions set a story that later evidence gets bent to fit. Order matters: the same trait list, reversed, produces a different person in your head.',
+ why:'It\u2019s why interviews are dominated by the first ten minutes, why tall candidates get promoted, and why one great demo buys a stranger a whole personality on credit.',
+ links:['wysiati','overconf']},
+{id:'anchoring', name:'Anchoring', fam:'judge', ref:'Part II \u00b7 ch. 11',
+ def:'Estimates start from whatever number is in view and adjust insufficiently \u2014 even when the anchor is visibly random, like a rigged wheel of fortune. It works through two channels: deliberate adjustment that stops too early (System 2 being lazy) and priming (the anchor makes compatible facts easier to retrieve).',
+ why:'One of the most robust, measurable effects in psychology \u2014 and the most weaponized. First offers, list prices, \u201cwas 499, now 299,\u201d and \u201climit 12 per customer\u201d are all anchors aimed at your wallet.',
+ links:['heuristic','priming']},
+{id:'availability', name:'Availability', fam:'judge', ref:'Part II \u00b7 ch. 12\u201313',
+ def:'Frequency gets judged by retrieval fluency: vivid, recent, personal and dramatic events come to mind easily, so they feel common. Media coverage and public emotion then feed each other in \u201cavailability cascades,\u201d inflating minor risks into full panics while boring killers go unnoticed.',
+ why:'Why plane crashes feel deadlier than car rides, shark attacks deadlier than vending machines, and why whatever happened to you personally feels like a trend.',
+ links:['heuristic']},
+{id:'representativeness', name:'Representativeness', fam:'judge', ref:'Part II \u00b7 ch. 14\u201315',
+ def:'Probability judged by resemblance to a stereotype: the tidy, poetry-reading stranger \u201cmust be\u201d a librarian. Similarity is vivid and instant; base rates \u2014 how many librarians actually exist \u2014 are abstract and get discarded, along with any doubts about the quality of the description itself.',
+ why:'The engine behind the Linda problem, most bad hires, and every \u201cthis startup looks like the next Google\u201d pitch. Looking like an X is weak evidence of being an X when Xs are rare.',
+ links:['heuristic','baserate']},
+{id:'baserate', name:'Base rates', fam:'stat', ref:'Part II \u00b7 ch. 14, 16',
+ def:'The background frequency of a category before you examine the specific case: how many startups fail, how many managers beat the market by luck, how many delivery drivers your city employs. Statistical base rates get ignored whenever specific, story-shaped information is on the table.',
+ why:'Kahneman\u2019s crispest prediction advice: anchor on the base rate first, then adjust \u2014 timidly \u2014 for your specific evidence. Doing it in that order is half the battle.',
+ links:['representativeness','smallnumbers','outsideview']},
+{id:'smallnumbers', name:'Law of small numbers', fam:'stat', ref:'Part II \u00b7 ch. 10',
+ def:'Small samples produce extreme results routinely \u2014 not despite being small but because of it \u2014 yet intuition expects them to mirror the population. Even trained researchers trust wildly underpowered studies, because a coherent result feels like a true one.',
+ why:'The smallest counties have both the highest and lowest kidney-cancer rates; the best schools are small \u2014 and so are the worst. Before believing any pattern, ask the least glamorous question in statistics: what\u2019s n?',
+ links:['baserate','regression','s2','egodepletion']},
+{id:'regression', name:'Regression to the mean', fam:'stat', ref:'Part II \u00b7 ch. 17\u201318',
+ def:'Whenever correlation between two measurements is imperfect, extreme scores are followed by more moderate ones \u2014 pure statistics, no cause required. But System 1 abhors a causal vacuum and always supplies a story: the yelling worked, the praise made them soft, the magazine cover cursed the athlete.',
+ why:'It guarantees that punishment appears to work and reward appears to backfire \u2014 a cruel joke built into the structure of the world, and the reason feedback feels so misleading.',
+ links:['smallnumbers']},
+{id:'overconf', name:'Illusion of validity', fam:'judge', ref:'Part III \u00b7 ch. 20\u201321',
+ def:'Confidence is a feeling generated by the coherence of a story, not a measurement of accuracy \u2014 so it survives direct statistical refutation. Kahneman rated soldiers, learned his ratings predicted almost nothing, and felt fully confident again during the very next assessment.',
+ why:'This is why \u201chow sure are you?\u201d is nearly useless, why interviews mislead everyone including the interviewer, and why simple formulas beat expert judgment across hundreds of studied domains.',
+ links:['wysiati','halo','expertintuition','optimism']},
+{id:'expertintuition', name:'Expert intuition', fam:'judge', ref:'Part III \u00b7 ch. 22',
+ def:'Real expert intuition exists \u2014 chess masters, firefighters, anesthesiologists \u2014 but Kahneman\u2019s adversarial collaboration with Gary Klein pinned down exactly when: (1) an environment regular enough to contain valid cues, and (2) prolonged practice with fast, clear feedback. Intuition is recognition \u2014 nothing more magical, nothing less useful.',
+ why:'A checklist for whom to trust: stock pickers and political pundits fail the environment test no matter how senior they feel. Interrogate the domain, not the r\u00e9sum\u00e9.',
+ links:['s1','overconf']},
+{id:'outsideview', name:'Inside vs outside view', fam:'stat', ref:'Part III \u00b7 ch. 23',
+ def:'Two ways to forecast anything: the inside view builds from your case\u2019s specifics \u2014 your plan, your talent, your intentions; the outside view asks how cases like yours generally turn out. The inside view feels better informed and is reliably worse.',
+ why:'The single most practical tool in the book (\u201creference-class forecasting\u201d). It\u2019s the cure for the planning fallacy and the leash for entrepreneurial optimism.',
+ links:['baserate','optimism']},
+{id:'optimism', name:'Optimism bias', fam:'judge', ref:'Part III \u00b7 ch. 24',
+ def:'Most of us \u2014 founders especially \u2014 see our odds as far better than the base rate: entrepreneurs put their venture\u2019s success chances around 60% against a ~35% five-year survival rate, and a third rate their personal risk of failure at zero. Includes competition neglect: planning as if rivals don\u2019t exist.',
+ why:'Kahneman calls optimists \u201cthe engine of capitalism\u201d \u2014 resilience and persistence run on this fuel \u2014 but forecasts and budgets need the outside view as adult supervision.',
+ links:['wysiati','overconf','outsideview']},
+{id:'prospect', name:'Prospect theory', fam:'choice', ref:'Part IV \u00b7 ch. 25\u201326',
+ def:'The Nobel-winning model of choice under risk, built on three ideas classical economics missed: outcomes are evaluated as gains and losses from a reference point, not as final wealth; sensitivity diminishes (100\u2192200 z\u0142 feels bigger than 1,100\u21921,200); and losses loom roughly twice as large as equivalent gains.',
+ why:'The mathematical heart of behavioral economics \u2014 the S-curve in the engine room below is this theory drawn. Once you see the reference point, half of \u201cirrational\u201d behavior becomes legible.',
+ links:['lossaversion','framing','econs','mentalacct']},
+{id:'lossaversion', name:'Loss aversion', fam:'choice', ref:'Part IV \u00b7 ch. 26, 28',
+ def:'Losses hurt roughly twice as much as equal gains please \u2014 the value curve is steeper on the loss side. Evolution\u2019s accounting: organisms that treated threats as more urgent than opportunities left more descendants. The asymmetry shapes negotiation, golf putts, and why reforms with identifiable losers are nearly impossible to pass.',
+ why:'The load-bearing wall of prospect theory: it generates the endowment effect, insurance overbuying, refusal of good bets, and status-quo stickiness \u2014 one asymmetry, many costumes.',
+ links:['prospect','framing','mentalacct']},
+{id:'framing', name:'Framing', fam:'choice', ref:'Part IV \u00b7 ch. 34',
+ def:'Logically identical descriptions produce different decisions: \u201c90% survive\u201d comforts, \u201c10% die\u201d terrifies; gain frames make us risk-averse, loss frames make us gamble. System 1 reacts to the evoked picture, and System 2 rarely audits the wording.',
+ why:'If your choice flips with the phrasing, the choice was never really yours \u2014 it belonged to whoever wrote the sentence. Reframing every decision both ways is free and shockingly effective.',
+ links:['wysiati','prospect','lossaversion']},
+{id:'mentalacct', name:'Mental accounting', fam:'choice', ref:'Part IV \u00b7 ch. 32',
+ def:'We keep money in separate mental jars \u2014 \u201cvacation fund,\u201d \u201cwinnings,\u201d \u201cwhat I paid for this ticket\u201d \u2014 and treat the jars differently, even though money is perfectly fungible. Closing an account in the red is painful, so we hold losing stocks, finish bad concerts, and treat \u201chouse money\u201d as free.',
+ why:'Thaler\u2019s bridge between Kahneman\u2019s psychology and real finance: it explains the disposition effect, why cash-back feels different from a discount, and why a savings jar earns 2% while the credit card charges 19%.',
+ links:['prospect','lossaversion']},
+{id:'econs', name:'Econs vs Humans', fam:'choice', ref:'Part IV \u00b7 intro',
+ def:'Econs \u2014 the agents of classical economic theory \u2014 have consistent preferences, update on evidence, ignore sunk costs, and never notice how a question is worded. Humans are\u2026 the rest of the book. The gap between the two species is measurable, predictable, and profitable to whoever sees it first.',
+ why:'That gap is behavioral economics. It\u2019s also the argument for \u201cnudges\u201d: if Humans predictably err, choice architecture can predictably help \u2014 or predictably exploit.',
+ links:['prospect','s2']},
+{id:'remembering', name:'Two selves', fam:'memory', ref:'Part V \u00b7 ch. 35\u201336',
+ def:'The experiencing self lives your life moment by moment; the remembering self keeps score, tells the story afterwards \u2014 and makes all the decisions. They routinely disagree: the remembering self will happily sign the experiencing self up for extra suffering if it improves the ending.',
+ why:'You choose vacations, jobs, and even medical procedures for the memory, not the experience. Deciding which self to optimize for is, quietly, one of life\u2019s biggest questions.',
+ links:['s1','peakend']},
+{id:'peakend', name:'Peak\u2013end rule', fam:'memory', ref:'Part V \u00b7 ch. 35\u201337',
+ def:'Remembered experience \u2248 the average of its most intense moment and its ending; everything else \u2014 including how long it lasted \u2014 is mostly discarded (duration neglect). The remembering self is a ruthless editor with a two-frame budget.',
+ why:'A worse experience with a gentler ending is remembered as better \u2014 proven with actual colonoscopies. Design endings deliberately: of trips, projects, meetings, and difficult conversations.',
+ links:['remembering']},
+{id:'egodepletion', name:'Ego depletion', fam:'core', ref:'Part I \u00b7 ch. 3',
+ def:'The book\u2019s claim that self-control drains a shared, limited resource \u2014 resist cookies now, quit the puzzle sooner later. The honest update: large pre-registered replications later found effects near zero, and Kahneman himself acknowledged having trusted underpowered studies in this area.',
+ why:'Worth knowing twice over: once as the (shakier) psychology, and once as a lesson in epistemics \u2014 a coherent result feels true even to Nobel-grade readers. WYSIATI applies to reading science, too.',
+ links:['s2','smallnumbers']}
+];
+
+function renderTerms(){
+  const grid = document.getElementById('termGrid');
+  grid.innerHTML = TERMS.map(t=>`
+    <article class="term-card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+        <h3>${t.name}</h3><span class="chip">${t.ref}</span>
+      </div>
+      <p>${t.def}</p>
+      <div class="term-why">${t.why}</div>
+      <div class="tag-row">
+        <span class="tag ${FAM[t.fam].cls}">${FAM[t.fam].label}</span>
+        ${t.links.slice(0,3).map(l=>{const n=TERMS.find(x=>x.id===l);return n?`<span class="tag" style="color:#9a8f83">${n.name}</span>`:''}).join('')}
+      </div>
+    </article>`).join('');
+}
+
+/* ---------- force-directed graph ---------- */
+function buildEdges(){
+  const byId = Object.fromEntries(TERMS.map(t=>[t.id,t]));
+  const edges=[], seen=new Set();
+  TERMS.forEach(t=>t.links.forEach(l=>{
+    if(!byId[l]) return;
+    const key=[t.id,l].sort().join('|');
+    if(seen.has(key)) return; seen.add(key);
+    edges.push([t.id,l]);
+  }));
+  return {byId, edges};
+}
+
+function layoutGraph(nodes, edges){
+  const W=960, H=760, CX=W/2, CY=H/2;
+  const idx=Object.fromEntries(nodes.map((n,i)=>[n.id,i]));
+  const deg={}; edges.forEach(([a,b])=>{deg[a]=(deg[a]||0)+1;deg[b]=(deg[b]||0)+1;});
+  // deterministic init: family-clustered circle, hubs pulled inward
+  const famAngle={core:-2.4, judge:-0.6, stat:0.6, choice:1.8, memory:3.0};
+  nodes.forEach((n,i)=>{
+    const a = famAngle[n.fam] + (i%7)*0.35;
+    const r = 240 - Math.min(deg[n.id]||1,7)*22;
+    n.px = CX + r*Math.cos(a) + (i%3)*9;
+    n.py = CY + r*Math.sin(a) + (i%5)*7;
+  });
+  for(let it=0; it<650; it++){
+    const cool = 1 - it/650;
+    nodes.forEach(n=>{n.fx=0;n.fy=0;});
+    // pairwise repulsion
+    for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+      const a=nodes[i], b=nodes[j];
+      let dx=a.px-b.px, dy=a.py-b.py;
+      let d2=dx*dx+dy*dy; if(d2<1) d2=1;
+      const d=Math.sqrt(d2), f=30000/d2;
+      dx/=d; dy/=d;
+      a.fx+=dx*f; a.fy+=dy*f; b.fx-=dx*f; b.fy-=dy*f;
+    }
+    // spring attraction along edges
+    edges.forEach(([ai,bi])=>{
+      const a=nodes[idx[ai]], b=nodes[idx[bi]];
+      let dx=b.px-a.px, dy=b.py-a.py;
+      const d=Math.sqrt(dx*dx+dy*dy)||1;
+      const f=(d-150)*0.03;
+      dx/=d; dy/=d;
+      a.fx+=dx*f*d*0.02+dx*f; a.fy+=dy*f*d*0.02+dy*f;
+      b.fx-=dx*f*d*0.02+dx*f; b.fy-=dy*f*d*0.02+dy*f;
+    });
+    // gentle gravity toward center
+    nodes.forEach(n=>{
+      n.fx += (CX-n.px)*0.012;
+      n.fy += (CY-n.py)*0.012;
+      const step = 6*cool;
+      const mag=Math.sqrt(n.fx*n.fx+n.fy*n.fy)||1;
+      n.px += (n.fx/mag)*Math.min(mag,step);
+      n.py += (n.fy/mag)*Math.min(mag,step);
+    });
+  }
+  // fit + center into viewBox with padding (independent axes to use full canvas)
+  const padX=86, padTop=54, padBottom=92;
+  const xs=nodes.map(n=>n.px), ys=nodes.map(n=>n.py);
+  const minX=Math.min(...xs), maxX=Math.max(...xs), minY=Math.min(...ys), maxY=Math.max(...ys);
+  const sx=(W-2*padX)/(maxX-minX||1), sy=(H-padTop-padBottom)/(maxY-minY||1);
+  nodes.forEach(n=>{ n.x = padX+(n.px-minX)*sx; n.y = padTop+(n.py-minY)*sy; });
+  nodes.forEach(n=>{ n.r = 17 + Math.min(deg[n.id]||1,8)*2.2; });
+}
+
+function edgePath(a,b){
+  const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+  const dx=b.x-a.x, dy=b.y-a.y, d=Math.sqrt(dx*dx+dy*dy)||1;
+  const off=Math.min(d*0.12,26);
+  return `M ${a.x} ${a.y} Q ${mx - dy/d*off} ${my + dx/d*off} ${b.x} ${b.y}`;
+}
+
+function renderGraph(){
+  const svg = document.getElementById('conceptGraph');
+  svg.setAttribute('viewBox','0 0 960 760');
+  const info = document.getElementById('graphInfo');
+  const {byId, edges} = buildEdges();
+  layoutGraph(TERMS, edges);
+
+  let html = `<g>` + edges.map(([a,b])=>
+    `<path class="gedge" data-a="${a}" data-b="${b}" d="${edgePath(byId[a],byId[b])}" fill="none"/>`
+  ).join('') + `</g>`;
+  html += TERMS.map(t=>`
+    <g class="gnode" data-id="${t.id}" tabindex="0" role="button" aria-label="${t.name}">
+      <circle cx="${t.x}" cy="${t.y}" r="${t.r}" fill="${FAM[t.fam].color}" fill-opacity="0.92"/>
+      <text x="${t.x}" y="${t.y + t.r + 16}" text-anchor="middle">${t.name}</text>
+    </g>`).join('');
+  svg.innerHTML = html;
+
+  function select(id){
+    const t = byId[id];
+    const hood = new Set([id, ...t.links]);
+    TERMS.forEach(o=>o.links.includes(id)&&hood.add(o.id));
+    svg.querySelectorAll('.gnode').forEach(n=>{
+      n.classList.toggle('dim', !hood.has(n.dataset.id));
+    });
+    svg.querySelectorAll('.gedge').forEach(e=>{
+      const hot = e.dataset.a===id || e.dataset.b===id;
+      e.classList.toggle('dim', !hot);
+      e.classList.toggle('edge-hot', hot);
+    });
+    const neighbors=[...hood].filter(x=>x!==id).map(x=>byId[x].name).join(' \u00b7 ');
+    info.innerHTML = `<h3>${t.name} <span class="tag ${FAM[t.fam].cls}" style="vertical-align:middle">${FAM[t.fam].label}</span> <span class="chip">${t.ref}</span></h3>
+      <p>${t.def}</p><p><strong>Wired to:</strong> ${neighbors}</p><p class="graph-hint">${t.why}</p>`;
+  }
+  svg.addEventListener('click',e=>{
+    const g=e.target.closest('.gnode'); if(g) select(g.dataset.id);
+  });
+  svg.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' '){const g=e.target.closest('.gnode'); if(g){e.preventDefault();select(g.dataset.id);}}
+  });
+}
+</script>
+<script>
+/* ================= DATA: BIAS LIBRARY ================= */
+const BIASES = [
+{fam:'Heuristics of judgment', color:'#3D4EA1', items:[
+  {emoji:'\uD83D\uDCA1', name:'Availability heuristic', ref:'Part II \u00b7 ch. 12\u201313',
+   one:'If it comes to mind easily, it must be common. (It must not.)',
+   text:'You estimate how likely or frequent something is by how easily examples surface \u2014 substituting retrieval fluency for statistics. Vivid, recent, emotional, dramatic, or personally experienced events are easy to recall, so they feel common, whether or not they are. The effect compounds socially: media covers the dramatic, coverage raises availability, availability raises fear, fear generates more coverage \u2014 an \u201cavailability cascade\u201d that can turn a minor risk into a national panic while statistically enormous killers (diabetes, falls) stay boring and invisible. The heuristic even bends self-assessment: people who list 12 examples of their own assertiveness rate themselves less assertive than people asked for 6 \u2014 because retrieving 12 felt hard, and the difficulty itself was the signal.',
+   examples:[
+     'After one news story about a stolen bike, the whole neighborhood feels like a crime wave \u2014 while the actual statistics quietly improve.',
+     'Doctors overdiagnose whatever disease they saw last week; investors overweight whatever crash they personally lived through.',
+     'Couples asked \u201cwhat % of housework do you do?\u201d give answers summing to ~130% \u2014 each person\u2019s own effort is simply more available to them. The same math ruins startup equity splits.'],
+   exps:[
+     {name:'Letter K study \u2014 Tversky & Kahneman (1973)', find:'Asked whether K appears more often as the 1st or 3rd letter of English words, most people say 1st \u2014 words starting with K are easier to retrieve. In reality K is about twice as common in 3rd position.'},
+     {name:'Lichtenstein & Slovic \u2014 causes of death', find:'People rated tornadoes as deadlier than asthma (asthma kills ~20x more) and accidents as deadlier than strokes (strokes kill ~2x more) \u2014 dramatic deaths get coverage, availability, and inflated probability.'},
+     {name:'Schwarz \u2014 6 vs 12 examples (1991)', find:'Listing 12 instances of your own assertiveness is hard; the felt difficulty of retrieval outweighed the content, lowering self-ratings. Fluency itself is the data.'}],
+   tip:'When judging frequency or risk, ask: \u201cam I counting cases, or counting how easily they come to mind?\u201d Then go find the boring number \u2014 the base rate is usually one search away.'},
+  {emoji:'\uD83E\uDDF8', name:'Representativeness (& base-rate neglect)', ref:'Part II \u00b7 ch. 14\u201316',
+   one:'He looks like a librarian, therefore he is one. Never mind how few librarians exist.',
+   text:'You judge probability by resemblance to a stereotype and quietly discard the base rate \u2014 how common each category actually is in the world. Similarity is vivid, instant, and feels like insight; frequency is abstract and invisible. Worse, representativeness makes you insensitive to the quality of evidence: a detailed personality sketch of dubious origin gets treated as solid data because it paints a coherent picture (WYSIATI at work). The correct discipline is Bayesian \u2014 start from the base rate, then adjust for the specific evidence in proportion to its reliability \u2014 and almost nobody does it unprompted, including statisticians on their coffee break.',
+   examples:[
+     'A shy, tidy stranger \u201cmust be\u201d a librarian rather than a farmer \u2014 though farmers vastly outnumber male librarians.',
+     'A startup with a charismatic founder and a garage origin story \u201clooks like\u201d the next big thing. Most startups that look exactly like that also fail, because most startups fail \u2014 the resemblance carries almost no information.',
+     'A candidate who interviews like your best engineer gets hired over the awkward one with a stronger track record. The interview measured resemblance; the track record measured the thing.'],
+   exps:[
+     {name:'Tom W \u2014 Kahneman & Tversky (1973)', find:'Given a nerdy personality sketch explicitly described as unreliable, students still ranked \u201ccomputer science\u201d as Tom\u2019s likely field \u2014 while separately knowing it was one of the smallest programs. The sketch crushed both the base rate and their own doubts about the evidence.'},
+     {name:'The cab problem', find:'A witness identifies a hit-and-run cab as Blue in a city where 85% of cabs are Green; the witness is 80% reliable. Most people answer ~80% Blue. Bayes\u2019 rule says ~41% \u2014 the base rate outweighs the vivid testimony.'}],
+   tip:'Say the base rate out loud before you look at the specific case: \u201cout of 100 people/companies/candidates like this, how many are X?\u201d Then let the evidence move you from there \u2014 timidly.'},
+  {emoji:'\u2693', name:'Anchoring', ref:'Part II \u00b7 ch. 11',
+   one:'Any number in the room bends your estimate toward it. Any number.',
+   text:'Estimates start from an initial value and adjust insufficiently \u2014 and the anchor doesn\u2019t need to be relevant, credible, or even sane; exposure is enough. Two mechanisms drive it: effortful adjustment that stops as soon as the answer feels plausible (a System 2 failure \u2014 adjustment is work, and we quit early), and associative priming, where the anchor makes anchor-consistent information easier to retrieve (a System 1 failure \u2014 the number 4,500 makes you notice the flat\u2019s high ceilings; 3,000 would have made you notice the mold). Anchoring is unusually measurable: the \u201canchoring index\u201d \u2014 how far estimates move per unit of anchor movement \u2014 routinely lands around 50%, even among professionals who swear they ignored the number.',
+   examples:[
+     'A flat listed at 4,500 z\u0142 makes 4,200 feel like a win \u2014 even when identical flats rent for 3,600. The negotiation happened inside the anchor\u2019s gravity, never against the market.',
+     '\u201cLimit 12 per customer\u201d signs roughly double soup sales \u2014 the 12 anchors the quantity question nobody was consciously asking.',
+     'The first salary number spoken in a negotiation quietly owns the rest of the conversation. This is why \u201cwhat are your salary expectations?\u201d comes first.'],
+   exps:[
+     {name:'Wheel of fortune \u2014 Tversky & Kahneman (1974)', find:'A rigged wheel landing on 10 or 65 shifted estimates of African UN membership from 25% to 45%. A number the subjects watched being randomly generated moved a factual judgment by 20 points.'},
+     {name:'German judges & loaded dice \u2014 Englich et al. (2006)', find:'Experienced judges who rolled higher dice before sentencing a hypothetical shoplifter handed down sentences ~50% longer. Dice. Judges. Years of training, zero immunity.'},
+     {name:'Real-estate agents \u2014 Northcraft & Neale (1987)', find:'Professional agents touring an actual house were swayed ~40% as much as amateurs by a manipulated listing price \u2014 while insisting the listing price played no role in their appraisal.'}],
+   tip:'Name the anchor out loud (\u201cthat 4,500 is doing work on me\u201d), form your own estimate before hearing anyone\u2019s number, and deliberately argue why the anchor is wrong \u2014 counter-arguing is the one debiasing move shown to loosen its grip.'},
+  {emoji:'\u2764\uFE0F', name:'Affect heuristic', ref:'Part I \u00b7 ch. 9',
+   one:'\u201cHow do I feel about it?\u201d masquerading as \u201cwhat do I think about it?\u201d',
+   text:'Likes and dislikes determine beliefs \u2014 not the other way around, as we flatter ourselves. If you love a technology, you rate its benefits high and its risks low; if you hate it, both flip. The tell is that in the real world benefits and risks are usually positively correlated (powerful things are dangerous), while in people\u2019s heads they\u2019re strongly negatively correlated \u2014 a mathematical impossibility revealing that one feeling is generating both estimates. The emotional tail wags the rational dog: arguments and evidence get recruited after the verdict, as a legal team, not a jury.',
+   examples:[
+     'Fans of a company judge its stock \u201csafe\u201d \u2014 the feeling about the brand becomes an analysis of the balance sheet.',
+     'You dislike a politician, therefore every policy they touch becomes simultaneously evil and impractical. Notice how rarely anyone believes an opponent\u2019s idea is immoral but effective.',
+     'Engineers rate the framework they enjoy as also being the fast, safe, and scalable one. Occasionally this is even true.'],
+   exps:[
+     {name:'Slovic \u2014 risk/benefit inverse correlation', find:'Across dozens of technologies, perceived risk and perceived benefit correlate strongly negatively in people\u2019s judgments \u2014 though not in reality. One affective response is driving both dials.'},
+     {name:'Finucane et al. (2000) \u2014 benefits lower risk', find:'Reading an argument for a technology\u2019s benefits lowered people\u2019s estimates of its risks \u2014 no risk information was provided. The feeling improved, so everything improved.'}],
+   tip:'Audit for lockstep: if your benefit and risk estimates for something always point the same direction, a feeling is doing your math. Force yourself to write one genuine cost of things you love and one genuine merit of things you hate.'},
+  {emoji:'\uD83D\uDD00', name:'Substitution', ref:'Part I \u00b7 ch. 9',
+   one:'Hard question in, easy question out. Confidence included free of charge.',
+   text:'When a target question is hard (\u201cWill this candidate succeed?\u201d, \u201cIs this investment sound?\u201d), System 1 answers a related, easier heuristic question (\u201cDid they impress me?\u201d, \u201cDo I like this story?\u201d) and hands over the answer as if it addressed the original. The substitution is invisible from the inside \u2014 no mental event marks the swap \u2014 which is why the resulting answer carries full, unearned confidence. This is the master mechanism inside most named heuristics: availability substitutes \u201chow easily do examples come to mind?\u201d, representativeness substitutes \u201chow similar is this to my stereotype?\u201d, affect substitutes \u201chow do I feel?\u201d.',
+   examples:[
+     '\u201cHow happy are you with your life these days?\u201d quietly becomes \u201cWhat mood am I in right now?\u201d \u2014 which is why the weather changes life-satisfaction surveys.',
+     '\u201cShould we ship this?\u201d becomes \u201cAm I tired of this project?\u201d',
+     '\u201cHow well will this politician govern?\u201d becomes \u201cDo they look competent on camera?\u201d \u2014 and competent-looking faces really do win more elections.'],
+   exps:[
+     {name:'Dating question order \u2014 Strack, Martin & Schwarz (1988)', find:'\u201cHow happy are you?\u201d then \u201cHow many dates last month?\u201d: near-zero correlation. Reversed order: correlation jumped to 0.66. The dating answer, freshly available, got substituted into the happiness question.'},
+     {name:'Todorov \u2014 competence at a glance (2005)', find:'Snap judgments of \u201ccompetence\u201d from politicians\u2019 photos alone predicted ~70% of US Senate race winners. Voters answered an easier question than \u201cwho will govern well?\u201d'}],
+   tip:'Suspiciously fast answers to genuinely hard questions are the tell. Catch one and ask: \u201cwhich easier question did I actually just answer \u2014 and would the hard one agree?\u201d'},
+  {emoji:'\uD83C\uDFB2', name:'Hot-hand & gambler\u2019s fallacies', ref:'Part II \u00b7 ch. 10',
+   one:'Randomness doesn\u2019t look random \u2014 so streaks become \u201cskill\u201d and losses become \u201cdue.\u201d',
+   text:'Two mirror-image errors from one source: intuition expects random sequences to look balanced everywhere, but true randomness is far streakier than that. When we see a run of successes, we infer a hot state that will continue (hot hand); when we see a run of reds at the roulette table, we infer black is \u201cdue\u201d (gambler\u2019s fallacy). Both impose a causal pattern on statistical noise \u2014 the same reflex that made Londoners see targeting in the Blitz bombing map and makes recruiters see a \u201cpipeline\u201d after three good candidates from one university. The deep problem: System 1 is a pattern-detection machine with no setting for \u201cthere is no pattern.\u201d',
+   examples:[
+     'A basketball player hits three shots in a row and the whole arena \u2014 players, coaches, commentators \u2014 knows he\u2019s hot. The shooting percentages mostly disagree.',
+     'After five tails, half the room feels heads is overdue. The coin, famously, has no memory and no sense of fairness.',
+     'A trader\u2019s three good quarters become \u201ca system.\u201d A slot-machine player\u2019s three bad hours become \u201cit\u2019s about to pay out.\u201d Same math, opposite conclusions, both wrong.'],
+   exps:[
+     {name:'Gilovich, Vallone & Tversky (1985)', find:'Analyzing thousands of NBA shots and free throws: hit probability after a string of makes was no higher than after misses \u2014 while players, coaches and fans firmly believed otherwise. (Later re-analyses found a small real effect hiding in a subtle selection bias \u2014 but the perceived hot hand vastly exceeds any real one.)'},
+     {name:'The London Blitz map', find:'Londoners saw ominous patterns in where V-bombs fell \u2014 spies! spared neighborhoods! Statistical analysis showed the distribution was consistent with randomness. The clusters were real; the meaning wasn\u2019t.'}],
+   tip:'Before crediting a streak to skill or momentum, ask: \u201cin a random process of this size, how often would a streak like this appear anyway?\u201d (Spoiler: constantly.) Only deviations beyond that deserve a story.'}
+]},
+{fam:'Overconfidence & the stories we tell', color:'#FF6B2B', items:[
+  {emoji:'\uD83D\uDE07', name:'Halo effect', ref:'Part I \u00b7 ch. 7',
+   one:'One good trait buys the rest of the personality on credit.',
+   text:'A single salient impression \u2014 confidence, beauty, warmth, one great performance \u2014 colors every judgment that follows, because System 1 wants a coherent character, not an accurate one. Order is destiny: early information sets the story, and later evidence gets reinterpreted to fit rather than weighed independently. The halo also inflates our sense of consistency \u2014 people we like can do no wrong, people we dislike can do no right \u2014 and it silently corrupts group judgment, since the first confident speaker in a meeting anchors what everyone else\u2019s \u201cindependent\u201d opinion turns out to be. Kahneman\u2019s fix in hiring \u2014 score independent traits separately, in a fixed order, before allowing any global impression \u2014 is the rare debiasing technique with real evidence behind it.',
+   examples:[
+     'The new hire nails one demo, and suddenly he\u2019s asked to mentor interns, lead architecture, and probably fix the coffee machine. His code has been reviewed once.',
+     'A tall, deep-voiced candidate \u201cseems like a leader.\u201d That\u2019s the entire analysis, and it decides careers daily.',
+     'A professor who\u2019s funny in lecture gets higher ratings for the textbook, the grading fairness, and the field itself.'],
+   exps:[
+     {name:'Alan vs Ben \u2014 Asch (1946)', find:'Identical trait lists in reversed order (intelligent\u2026envious vs envious\u2026intelligent) produce opposite overall impressions \u2014 the first traits change the interpretation of every later one. \u201cStubborn\u201d after \u201cintelligent\u201d reads as principled; after \u201cenvious,\u201d as hostile.'},
+     {name:'Officer ratings \u2014 Thorndike (1920)', find:'Commanders rating soldiers couldn\u2019t evaluate physique, intelligence and character independently \u2014 one global impression contaminated every scale. Thorndike measured the impossible correlations and named the halo.'},
+     {name:'Kahneman\u2019s interview reform (Israeli army)', find:'Replacing global interviewer impressions with six independently-scored traits, summed mechanically, substantially improved prediction of soldier performance \u2014 and interviewers hated it, because it removed the feeling of insight.'}],
+   tip:'Decorrelate your evidence: judge traits (or projects, or answers) independently and in writing before forming any overall verdict \u2014 and in meetings, collect opinions before the confident person speaks.'},
+  {emoji:'\uD83D\uDD2E', name:'Illusion of validity', ref:'Part III \u00b7 ch. 20\u201321',
+   one:'Confidence measures the quality of your story, not your evidence.',
+   text:'When observations form a coherent picture, subjective confidence surges \u2014 even when those observations demonstrably predict nothing, and even when you know they predict nothing. Confidence is a feeling, generated by coherence and cognitive ease, and feelings don\u2019t read validity studies. This is why the statistical case against expert judgment is so brutal: Meehl\u2019s formulas beat clinicians, algorithms beat radiologists at consistency (the same radiologist contradicts himself 20% of the time on the same X-ray), and the illusion survives every refutation because each new coherent impression regenerates the feeling from scratch. The finance version is the \u201cillusion of skill\u201d: an entire industry of stock-picking rests on year-to-year performance correlations near zero, sustained by a culture in which everyone\u2019s confidence confirms everyone else\u2019s.',
+   examples:[
+     '\u201cAfter 90 minutes with a candidate, I can just tell.\u201d Interview impressions barely predict performance, the interviewer has read that finding, and the telling continues.',
+     'A fund manager\u2019s decade of \u201cskill\u201d is statistically indistinguishable from dice \u2014 and the annual bonus meeting has never once mentioned this.',
+     'Political pundits deliver forecasts with total assurance; the more famous the pundit, the worse the track record (fame rewards confident stories, not accuracy).'],
+   exps:[
+     {name:'Kahneman\u2019s soldier assessments', find:'His unit\u2019s leadership evaluations, based on observing group exercises, predicted officer-school success barely better than chance \u2014 statistics they received regularly. Yet each new batch of soldiers produced vivid, confident impressions. He named it the illusion of validity on the spot.'},
+     {name:'Meehl \u2014 clinical vs statistical prediction (1954)', find:'Across what grew to ~200 comparisons, simple formulas match or beat trained experts in most domains \u2014 parole outcomes, disease diagnoses, wine prices, marital stability. The experts remain unconvinced to this day.'},
+     {name:'Tetlock \u2014 Expert Political Judgment (2005)', find:'~80,000 forecasts from 284 experts over 20 years: long-range political predictions barely beat chance; dart-throwing chimps became the standard joke, and media prominence correlated negatively with accuracy.'}],
+   tip:'Never ask \u201chow confident am I?\u201d \u2014 ask \u201cwhat feedback loop trained this intuition, and does this domain even contain learnable regularities?\u201d Trust track records and environments, not feelings, including your own.'},
+  {emoji:'\uD83D\uDCC5', name:'Planning fallacy', ref:'Part III \u00b7 ch. 23',
+   one:'Best-case scenario, filed under \u201cthe plan.\u201d',
+   text:'Forecasts for our own projects cling to the inside view \u2014 the vivid specifics of our case, our intentions, our talent \u2014 and quietly assume nothing will go wrong that isn\u2019t already in the plan. But projects fail through the unenumerable: illness, scope creep, dependencies, the audio thread demon. The outside view fixes this by brute force: find the reference class (\u201cprojects like this, by teams like ours\u201d), take its actual distribution of outcomes, and start your estimate there. The inside view feels more rigorous because it uses more case-specific information; it performs worse because that information is systematically optimistic. Organizations make it worse: the winning bid is usually the most deluded one (the \u201cwinner\u2019s curse\u201d in estimation form), so realistic planners lose the contract and the optimists deliver the overrun.',
+   examples:[
+     '\u201cThe core mechanic will take two weekends.\u201d It is month four. The menus do not exist.',
+     'Kitchen renovations: American homeowners expected ~$19k on average and paid ~$39k. The contractors\u2019 estimates were fine \u2014 the homeowners chose to believe the fantasy version.',
+     'Every government infrastructure project ever, to the point that Oxford\u2019s Bent Flyvbjerg built a career cataloguing the overruns (average cost overrun for rail: ~45%).'],
+   exps:[
+     {name:'Kahneman\u2019s curriculum team', find:'His textbook team estimated \u201ctwo more years.\u201d He then asked the member with the most experience how long similar teams took: 7\u201310 years, and 40% never finished at all. The team acknowledged the numbers and continued as before. The book took 8 years and was never used.'},
+     {name:'Scottish Parliament building', find:'Estimated at \u00a340m in 1997; opened in 2004 at ~\u00a3431m \u2014 roughly 10x. Typical of megaprojects worldwide, which is precisely the point: the base rate was knowable in advance.'},
+     {name:'Buehler et al. \u2014 student theses (1994)', find:'Students predicted 33.9 days to finish their thesis (48.6 \u201cif everything went as badly as possible\u201d). Actual average: 55.5 days \u2014 worse than their worst case. Their predictions for other students, using the outside view, were far more accurate.'}],
+   tip:'Reference-class forecast: before estimating, ask \u201chow long did the last five things like this actually take \u2014 for me, not for an idealized me?\u201d Start there and adjust only with specific, verifiable reasons.'},
+  {emoji:'\uD83E\uDE9E', name:'Hindsight bias', ref:'Part III \u00b7 ch. 19',
+   one:'\u201cI knew it all along\u201d \u2014 the past, freshly repainted.',
+   text:'Once you know an outcome, you cannot recover your earlier state of uncertainty: the mind instantly rebuilds the past so the outcome looks foreseeable, and your memory of your own predictions shifts to match. The damage is double. First, it makes the world seem more predictable than it is, feeding overconfidence about the future. Second, it corrupts how we judge decision-makers: choices get graded by outcomes rather than by the quality of the reasoning given the information available \u2014 so sensible risks that failed look like negligence, and reckless bets that paid off look like genius. Organizations marinated in hindsight teach their people bureaucratic cowardice: document everything, risk nothing, and above all never be the name attached to a bad outcome.',
+   examples:[
+     'After any market crash, everyone remembers having had doubts. Their trading histories are unavailable for comment.',
+     'Post-incident reviews convert \u201creasonable call given what we knew\u201d into \u201cobvious blunder\u201d \u2014 which quietly teaches engineers to hide risk instead of managing it.',
+     'The quarterback\u2019s interception makes the play call \u201cindefensible.\u201d Had it worked, the same call would be \u201cgutsy.\u201d Sports radio runs entirely on this fuel.'],
+   exps:[
+     {name:'Fischhoff \u2014 Nixon\u2019s China trip (1972)', find:'Before the trip, people assigned probabilities to possible outcomes. Afterwards, they recalled their own estimates as higher for events that happened and lower for ones that didn\u2019t \u2014 memory itself rewritten to flatter foresight.'},
+     {name:'Baruch Fischhoff \u2014 \u201ccreeping determinism\u201d', find:'Subjects told the outcome of an obscure historical battle rated that outcome as far more \u201cinevitable\u201d than subjects who weren\u2019t \u2014 and couldn\u2019t ignore the knowledge even when explicitly instructed to.'}],
+   tip:'Keep a decision journal: prediction, reasoning, and confidence, written before the outcome. Then grade yourself \u2014 and your colleagues \u2014 on the process that was visible at the time, not the result that wasn\u2019t.'},
+  {emoji:'\uD83D\uDCD6', name:'Narrative fallacy', ref:'Part III \u00b7 ch. 19',
+   one:'History is a story we tell after shuffling the deck.',
+   text:'We compress messy, luck-soaked reality into tidy cause-and-effect stories built from talent, vision, and character \u2014 and the tidier the story, the more we trust it, though tidiness and truth pull in opposite directions. Good stories are concrete, assign large roles to individual intentions, and above all omit the non-events: the thousand identical companies that made the same brilliant moves and died anyway, the crucial competitor server crash, the timing nobody chose. The halo effect then keeps the story internally consistent (a successful CEO\u2019s every habit becomes wisdom), and hindsight makes it feel like it was all foreseeable. The result is that business books and biographies mostly sell the illusion of understanding \u2014 comfort dressed as insight.',
+   examples:[
+     'Founder biographies: 300 pages of vision, 0 pages of \u201cour main rival\u2019s database corrupted itself during our launch week.\u201d',
+     'Google\u2019s origin story feels inevitable in retrospect \u2014 which is exactly why it teaches you almost nothing about identifying the next Google. (Google tried to sell itself for under $1M early on. The buyer passed.)',
+     'The same quarter\u2019s results produce \u201cdisciplined focus\u201d or \u201crigid culture\u201d in the press \u2014 depending only on the stock price direction.'],
+   exps:[
+     {name:'Rosenzweig \u2014 The Halo Effect in business', find:'The same firms get described as \u201cnimble, visionary, customer-obsessed\u201d while profits rise and \u201cchaotic, arrogant, complacent\u201d when they fall \u2014 with unchanged CEOs, strategies and cultures. The performance writes the narrative, not the reverse.'},
+     {name:'Hidden role of luck \u2014 CEO studies', find:'Correlation between CEO quality and firm outcomes is real but modest: a strong CEO improves the odds the better-led firm wins from 50% to roughly 60% \u2014 far below what the mythology implies.'}],
+   exps_note:'',
+   tip:'For every compelling success story, ask two questions: \u201cwhat luck does this story omit?\u201d and \u201cwhere\u2019s the graveyard?\u201d \u2014 the identical stories that ended in failure and therefore never got written.'},
+  {emoji:'\uD83D\uDE80', name:'Optimism bias & competition neglect', ref:'Part III \u00b7 ch. 24',
+   one:'Everyone\u2019s above average, every venture beats the odds, and rivals apparently don\u2019t exist.',
+   text:'We overrate our talents, underrate the role of luck, and plan as if competitors are decorative. Founders put their venture\u2019s odds around 60% against a ~35% five-year survival base rate; a third rate their personal failure risk at zero; and 90% of drivers place themselves above the median, which is a mathematical crime scene. Competition neglect is the strategic version: entering a market, we consider our own skills and plans (inside view, WYSIATI) and simply fail to simulate that every rival is running the same confident calculation \u2014 which is how six artisanal coffee shops open on one street that supports two. Kahneman is unusually gentle here: optimism is \u201cthe engine of capitalism,\u201d and optimists are more resilient, healthier, and more persistent. The bias is a gift for living and a hazard for forecasting \u2014 so keep the temperament, but chain the budget to the outside view.',
+   examples:[
+     'Every restaurant opening on the street where four just closed. The new owner has seen the closures and knows they are different.',
+     'Smokers who know the statistics and rate their personal risk as below average \u2014 the odds apply to other people.',
+     '\u201cOur go-to-market is strong\u201d \u2014 said simultaneously, about the same market, by nine startups in the same accelerator batch.'],
+   exps:[
+     {name:'Cooper, Woo & Dunkelberg \u2014 entrepreneurs (1988)', find:'81% of entrepreneurs put their personal odds of success at 7-in-10 or better, and 33% said their chance of failure was zero \u2014 against a base rate where roughly two-thirds of small businesses fail within five years.'},
+     {name:'CFO calibration \u2014 Ben-David, Graham & Harvey', find:'Large-company CFOs gave 80% confidence intervals for next-year S&P returns. Reality landed inside those intervals ~33% of the time. Senior financial officers were wildly overconfident and completely unaware of it.'}],
+   tip:'Run Gary Klein\u2019s premortem before committing: \u201cIt\u2019s one year from now. The plan failed completely. Take five minutes and write the history of how.\u201d It legitimizes doubt exactly when confidence is loudest.'},
+  {emoji:'\uD83E\uDD7D', name:'Theory-induced blindness', ref:'Part IV \u00b7 ch. 25',
+   one:'Once a theory becomes your tool, its flaws become invisible.',
+   text:'When you\u2019ve accepted a theory and used it to think, anomalies stop registering as problems \u2014 they get patched with local excuses while the framework itself escapes doubt. You give the theory the benefit of every doubt, because doubting it would mean redoing all the thinking built on top of it (a kind of intellectual sunk cost). Kahneman\u2019s exhibit A is Bernoulli\u2019s utility theory: its blind spot \u2014 that people respond to changes from a reference point, not to final wealth \u2014 is obvious the moment it\u2019s pointed out, yet it survived 250 years of brilliant readers. The lesson isn\u2019t that theories are bad; it\u2019s that the feeling of \u201cthis framework handles everything\u201d is exactly what a framework failing gracefully feels like from the inside.',
+   examples:[
+     'Classical economists explaining every observed irrationality as \u201chidden preferences\u201d or \u201cinformation costs\u201d \u2014 the theory is never wrong, reality just keeps needing footnotes.',
+     'Your system architecture held together by special cases: each patch is small, reasonable, and collectively they\u2019re the smell of a wrong abstraction.',
+     'A diagnosis (medical, organizational, or psychological) that reinterprets every contradicting symptom as further confirmation.'],
+   exps:[
+     {name:'Bernoulli\u2019s error \u2014 Kahneman\u2019s reconstruction', find:'Utility-of-final-wealth cannot explain why someone who dropped from 4M to 3M is miserable while someone who rose from 1M to 1.1M is delighted \u2014 reference points are missing. The gap sat in plain sight from 1738 until prospect theory, defended by two and a half centuries of excuses.'}],
+   tip:'Count the excuses. When defending your framework requires a growing collection of special cases, the anomalies aren\u2019t noise \u2014 they\u2019re the data. Schedule a genuine \u201cwhat would falsify this?\u201d hour.'}
+]},
+{fam:'Choices, risk & prospect theory', color:'#E84A7F', items:[
+  {emoji:'\uD83D\uDCC9', name:'Loss aversion', ref:'Part IV \u00b7 ch. 26, 28',
+   one:'Losing 100 z\u0142 hurts twice as much as winning 100 z\u0142 feels good.',
+   text:'The value function is steeper for losses than for gains \u2014 a ratio around 2:1, remarkably stable across cultures and stakes. Evolution\u2019s accounting: organisms that treated threats as more urgent than opportunities left more descendants. The consequences radiate everywhere: we reject bets with clearly positive expected value, overpay for insurance and extended warranties, cling to losing positions to avoid \u201crealizing\u201d the loss, and defend the status quo ferociously \u2014 because any reform creates identifiable losers who fight roughly twice as hard as the winners celebrate. Loss aversion even shapes fairness intuitions: cutting an employee\u2019s wage feels like theft, while hiring a replacement at the lower wage feels acceptable \u2014 the reference point moved, so the loss vanished.',
+   examples:[
+     'You refuse a coin flip: win 1,200 z\u0142 / lose 1,000 z\u0142. Mathematically excellent, emotionally radioactive.',
+     'Golfers putt measurably better for par (avoiding a loss) than for identical-distance birdie putts (a mere gain).',
+     'A company announces a reorg: the three people whose desks move complain for months; the five whose commutes improved say nothing. Management concludes the reorg failed.'],
+   exps:[
+     {name:'Gain/loss gambles \u2014 Kahneman & Tversky (1979)', find:'To accept a 50/50 bet risking $100, most people demand a potential gain of $200+. The ~2:1 loss-aversion coefficient became one of the most replicated quantities in behavioral science.'},
+     {name:'Pope & Schweitzer \u2014 2.5 million golf putts (2011)', find:'PGA professionals sink par putts (loss-avoiding) significantly more often than identical birdie putts (gain-seeking). Loss aversion, measured on grass, worth ~1.2 strokes per tournament to a top player.'}],
+   tip:'Two antidotes: reframe to final states (\u201cwhat will my total position be?\u201d rather than \u201cwhat might I lose?\u201d), and think in aggregates \u2014 you\u2019ll face thousands of small gambles in life, and a portfolio view makes each individual loss lose its sting.'},
+  {emoji:'\uD83C\uDFC6', name:'Endowment effect', ref:'Part IV \u00b7 ch. 27',
+   one:'It\u2019s worth more the moment it\u2019s yours.',
+   text:'Owning something raises its value in your eyes, because selling is coded as a loss and buying as a mere forgone gain \u2014 and losses loom larger. The result is a stubborn gap between willingness-to-accept and willingness-to-pay for the very same object, which shouldn\u2019t exist for an Econ. Crucially, the effect applies to goods held for use (mugs, tickets, flats, opinions), not goods held for exchange \u2014 traders don\u2019t mourn selling shoes, and experienced market participants show much weaker endowment effects, which suggests it\u2019s the emotional relationship with the object, not the object, doing the work. It also applies to non-things: positions in negotiations, features in products, and beliefs one has publicly defended all become painful to give up in proportion to how long they\u2019ve been \u201cowned.\u201d',
+   examples:[
+     'You would never pay 800 z\u0142 for the concert ticket you own \u2014 but you also won\u2019t sell it for 800 z\u0142. Both refusals, same evening.',
+     'Every flat seller believes their flat is special. Every buyer disagrees. Both are looking at the same walls; only one of them owns the walls.',
+     'The feature nobody uses that survives every product review, because the team that built it is in the room.'],
+   exps:[
+     {name:'The mug experiment \u2014 Kahneman, Knetsch & Thaler (1990)', find:'Students given a university mug demanded ~$7 to part with it; students without one would pay ~$3 to acquire it. Ownership of minutes doubled the price. Trading volume was half what rational theory predicts.'},
+     {name:'List \u2014 sports-card traders (2003)', find:'Novice collectors showed strong endowment effects; dealers with heavy market experience showed almost none. The effect is real, and it\u2019s trainable away \u2014 by treating things as tradeable.'}],
+   tip:'Ask the flip question: \u201cif I didn\u2019t own this \u2014 the ticket, the stock, the feature, the position \u2014 would I buy it today at this price?\u201d If no, you\u2019re not holding it; it\u2019s holding you.'},
+  {emoji:'\uD83D\uDDBC\uFE0F', name:'Framing effect', ref:'Part IV \u00b7 ch. 34',
+   one:'Same facts, different wording, opposite decision.',
+   text:'Choices respond to descriptions of reality, not to reality \u2014 and logically equivalent descriptions are not psychologically equivalent. \u201c90% survival\u201d and \u201c10% mortality\u201d evoke different images, and System 1 reacts to the image while System 2 rarely audits the wording. The pattern is systematic: framings that present outcomes as gains make people risk-averse (take the sure thing), framings that present the same outcomes as losses make people risk-seeking (gamble to avoid the loss) \u2014 which is how a single policy can be approved and rejected by the same person in the same hour. Kahneman\u2019s deeper point is uncomfortable: since some frame must always be chosen, there is no neutral presentation \u2014 whoever writes the sentence makes part of the decision.',
+   examples:[
+     '\u201c95% fat-free\u201d sells; \u201ccontains 5% fat\u201d doesn\u2019t. Same yogurt.',
+     '\u201cDiscount for early payment\u201d vs \u201cpenalty for late payment\u201d: identical money, measurably different compliance \u2014 the penalty frame works harder, because losses do.',
+     'Organ-donation rates across European countries track one thing almost perfectly: whether the form says \u201ccheck to opt in\u201d or \u201ccheck to opt out.\u201d The default is a frame, and the frame is worth ~60 percentage points.'],
+   exps:[
+     {name:'Asian disease problem \u2014 Tversky & Kahneman (1981)', find:'A program \u201csaving 200 of 600\u201d is chosen by 72%; the identical program framed as \u201c400 will die\u201d is chosen by 22%. Majorities flip on wording alone \u2014 the founding demonstration of framing.'},
+     {name:'Surgery framing \u2014 McNeil, Pauker, Sox & Tversky (1982)', find:'Physicians chose surgery over radiation far more often when told \u201c90% one-month survival\u201d than \u201c10% one-month mortality.\u201d Medical training provided no immunity whatsoever.'}],
+   tip:'Reword every consequential choice both ways before deciding \u2014 survive/die, keep/lose, opt-in/opt-out. If your preference flips, the frame was choosing, not you; now you get to choose deliberately.'},
+  {emoji:'\uD83D\uDD73\uFE0F', name:'Sunk cost fallacy', ref:'Part IV \u00b7 ch. 32',
+   one:'Throwing good hours after bad money.',
+   text:'Past, unrecoverable costs keep steering decisions that should depend only on future costs and benefits. The mechanism is mental accounting plus loss aversion: abandoning a project means closing its account in the red \u2014 converting a paper loss into a realized one \u2014 and that conversion hurts, so we pay real future resources to postpone an accounting entry. The fallacy scales terrifyingly well: from finishing a bad movie, to companies completing doomed projects because \u201cwe\u2019ve already invested 40 million\u201d (the strongest argument ever devised for investing 40 more), to nations escalating failed wars for the sake of the already-fallen. An Econ never looks back; a Human can\u2019t stop.',
+   examples:[
+     'The band is awful, the tickets were 300 z\u0142, and there is a pierogi place across the street. You stay. All three hours. The 300 z\u0142 is gone either way; the evening didn\u2019t have to be.',
+     '\u201cWe can\u2019t switch frameworks now \u2014 we\u2019ve spent eight months on this one.\u201d The eight months are spent in both futures. Only one future also loses the next eight.',
+     'Staying in a degree, a job, or a relationship primarily because of the years already in it \u2014 the years are not refundable, and they are not an argument.'],
+   exps:[
+     {name:'Arkes & Blumer \u2014 theater tickets (1985)', find:'Season-ticket buyers randomly given discounts attended fewer shows than full-price buyers. The more people had paid, the more shows they endured \u2014 attendance tracked the sunk cost, not the enjoyment.'},
+     {name:'Staw \u2014 escalation of commitment (1976)', find:'Managers who personally chose a failing investment allocated more additional funds to it than managers inheriting it \u2014 responsibility for the sunk cost drove the doubling-down.'}],
+   tip:'Ask the zero-based question: \u201cknowing everything I know now, would I start this today?\u201d If no, every additional day is a new decision to buy something you wouldn\u2019t buy. (Also: pre-commit to kill criteria before starting anything big.)'},
+  {emoji:'\uD83C\uDFB0', name:'Certainty & possibility effects', ref:'Part IV \u00b7 ch. 29\u201330',
+   one:'We overpay to reach exactly 0% and 100%, and barely notice the middle.',
+   text:'Probability weighting is warped at the edges. Moving from 0% to 5% feels enormous \u2014 hope is born, which is what lottery tickets actually sell (the possibility effect). Moving from 95% to 100% also feels enormous \u2014 the last sliver of doubt is worth almost anything to eliminate, which is what insurance, extended warranties, and lawsuit settlements sell (the certainty effect). Meanwhile 45%\u219250% barely registers, though it\u2019s the same five points. This fourfold pattern \u2014 risk-averse for probable gains, risk-seeking for improbable gains (lotteries), risk-averse for improbable losses (insurance), risk-seeking for probable losses (desperate gambles) \u2014 is prospect theory\u2019s signature achievement: one small table that explains most of the gambling and insurance industries simultaneously.',
+   examples:[
+     'People pay similar amounts to improve odds from 95% to 100% as from 50% to 60% \u2014 the certainty premium is real money for the same probability mass.',
+     'Defendants with strong cases settle for less than expected value: 95% likely to win feels unbearably uncertain, and the other side\u2019s lawyers know it.',
+     'A trailing team abandons its game plan for desperation plays \u2014 risk-seeking in the domain of probable losses, exactly on schedule.'],
+   exps:[
+     {name:'Allais paradox (1953)', find:'Choices between gambles reverse in ways no consistent expected-utility maximizer would allow \u2014 people pay a large premium for certainty specifically. The anomaly economists dismissed for decades became prospect theory\u2019s cornerstone.'},
+     {name:'Probability weighting \u2014 Tversky & Kahneman (1992)', find:'Measured decision weights: a 1% chance is treated as worth ~5.5%, a 99% chance as ~91%. The edges of the probability scale are systematically distorted in everyone.'}],
+   tip:'Convert to expected values when stakes matter: \u201cwhat am I actually paying for this last 5% of certainty \u2014 and would I pay the same for any other 5%?\u201d Usually the answer embarrasses the purchase.'},
+  {emoji:'\uD83D\uDDC2\uFE0F', name:'Mental accounting', ref:'Part IV \u00b7 ch. 32',
+   one:'Money in labeled jars, each jar with different rules.',
+   text:'We keep money in separate mental accounts \u2014 \u201cvacation fund,\u201d \u201cwinnings,\u201d \u201cwhat I paid for this ticket\u201d \u2014 and treat the jars differently, though money is perfectly fungible. The jars have emotional balance sheets: closing an account in the red hurts (so we hold losing stocks and finish bad concerts), house-money winnings feel free (so casinos let you gamble them recklessly), and a loss booked to the \u201ccash\u201d account doesn\u2019t contaminate the \u201ctheater\u201d account the way a lost ticket does. Thaler built this into a framework that explains the disposition effect \u2014 investors\u2019 systematic preference for selling winners (booking a small pleasure) over losers (deferring a pain) \u2014 which is not only irrational but usually tax-backwards, a rare case of a bias with a precise invoice.',
+   examples:[
+     'You lost your 200 z\u0142 concert ticket \u2192 \u201cI\u2019m not rebuying.\u201d You lost 200 z\u0142 in cash on the way \u2192 \u201cannoying, still going.\u201d Same wealth change, different jar.',
+     'A \u201cvacation fund\u201d earning 2% sits untouched next to a credit card charging 19% \u2014 the jars are not allowed to talk to each other.',
+     'Drivers who \u201cmade their number\u201d for the day go home early on rainy days \u2014 exactly when demand (and hourly earnings) are highest. Daily jars, expensive rules.'],
+   exps:[
+     {name:'Lost ticket vs lost cash \u2014 Tversky & Kahneman (1981)', find:'Only 46% would rebuy after losing a $10 ticket; 88% would buy after losing $10 cash. The ticket loss and the new ticket share one mental account, doubling the show\u2019s felt price; the cash loss is booked elsewhere.'},
+     {name:'Odean \u2014 the disposition effect (1998)', find:'Analysis of 10,000 brokerage accounts: investors were ~50% more likely to sell winners than losers. The losers they clung to went on to underperform the winners they sold \u2014 pain-avoidance with a measurable price tag.'}],
+   tip:'Once a quarter, force the jars to talk: \u201cignoring labels and history, what allocation of all this money maximizes the total?\u201d For investments specifically: you own what you own \u2014 purchase price is a memory, not a fact about the asset.'},
+  {emoji:'\uD83E\uDDEE', name:'Denominator neglect', ref:'Part IV \u00b7 ch. 30',
+   one:'\u201c8 winners out of 100\u201d beats \u201c1 out of 10\u201d \u2014 in feelings, not math.',
+   text:'Probabilities wearing different clothes get different reactions: vivid numerators dominate while denominators fade into abstraction. People routinely prefer drawing from an urn with 8 winning marbles out of 100 (8%) over one with 1 winner out of 10 (10%) \u2014 eight red marbles are easy to picture; the ninety-two white ones are not. The same trick powers risk communication in both directions: \u201cthis side effect struck 34 patients\u201d terrifies more than \u201c0.03% incidence,\u201d and \u201c1 in 100,000\u201d soothes more than \u201c25 people in this city.\u201d Frequency formats aren\u2019t inherently dishonest \u2014 they\u2019re often clearer \u2014 but whoever picks the format picks the feeling.',
+   examples:[
+     'A vaccine \u201cprotecting 999 of 1,000 children\u201d and one with \u201ca 0.1% failure rate\u201d poll very differently. Same vaccine.',
+     'Lottery marketing is a numerator museum: winners, cheques, confetti. Nobody photographs the denominator, because the denominator is everyone you know buying tickets forever.',
+     '\u201cOur deploy failed twice this quarter\u201d lands differently than \u201c99.4% success rate\u201d \u2014 pick your postmortem framing with care and conscience.'],
+   exps:[
+     {name:'Marble urns \u2014 Denes-Raj & Epstein (1994)', find:'30\u201340% of participants chose the objectively worse 100-marble urn, many while stating they knew the percentages \u2014 \u201cI knew the odds were against me, but I felt I had a better chance with more red marbles.\u201d The picture beat their own arithmetic.'},
+     {name:'Slovic \u2014 forensic risk framing', find:'Clinicians rated a patient as more dangerous when told \u201c20 out of 100 patients like Mr. Jones commit violence\u201d than when told \u201c20% of patients like Mr. Jones\u201d \u2014 the frequency format conjured 20 vivid incidents.'}],
+   tip:'Normalize before comparing: convert every risk to the same format (per-cent or per-10,000) before letting yourself feel anything about it. If a number arrives pre-formatted to alarm or soothe, ask who chose the format.'}
+]},
+{fam:'Attention, memory & the two selves', color:'#12968F', items:[
+  {emoji:'\uD83E\uDD8D', name:'Inattentional blindness', ref:'Part I \u00b7 ch. 2',
+   one:'You see far less than you think \u2014 and you\u2019re blind to the blindness.',
+   text:'Focused attention consumes System 2\u2019s strictly limited budget; whatever falls outside the spotlight can vanish entirely \u2014 not blurred, not glimpsed, but simply absent from experience. The unsettling half isn\u2019t missing the gorilla; it\u2019s the certainty afterward that you couldn\u2019t have. That certainty means we chronically overestimate how much of our environment we\u2019re monitoring \u2014 while driving, while reviewing code, while \u201clistening\u201d in a meeting with a laptop open. Effortful tasks are literally pupil-dilating, energy-hungry operations, and the mind protects them by deleting the rest of the world without filing a report.',
+   examples:[
+     'Drivers mid-phone-call miss the braking car in plain view \u2014 the road was visible; the attention wasn\u2019t.',
+     'You re-read your own bug three times and see the code you intended, not the code you wrote. A colleague spots it in four seconds.',
+     'Radiologists searching lung scans for nodules missed a gorilla image inserted into the scan \u2014 83% of them, with eye-tracking showing many looked directly at it.'],
+   exps:[
+     {name:'The invisible gorilla \u2014 Simons & Chabris (1999)', find:'Counting basketball passes, ~50% of viewers failed to see a person in a gorilla suit walk through, beat their chest, and exit \u2014 nine full seconds on screen. Nearly all were certain they could not have missed it.'},
+     {name:'Pupillometry \u2014 Kahneman & Beatty (1966)', find:'Pupil diameter tracks mental effort with remarkable precision \u2014 dilating up to 50% during hard digit-span tasks and collapsing the instant the subject gives up. Attention is a measurable, finite resource.'}],
+   tip:'Whenever attention was loaded \u2014 debugging, driving, negotiating \u2014 assume something was missed as a default, not a possibility. For anything that matters, that\u2019s what checklists and second pairs of eyes are for.'},
+  {emoji:'\uD83D\uDD0B', name:'Ego depletion', ref:'Part I \u00b7 ch. 3 \u2014 with a 2020s asterisk',
+   one:'Willpower as a battery \u2014 a famous idea that mostly didn\u2019t survive replication.',
+   text:'The book\u2019s claim: self-control and effortful thinking drain a shared, limited resource \u2014 resist the cookies now and you\u2019ll quit the puzzle sooner; in the most famous version, Israeli judges\u2019 parole approvals collapsed before food breaks. The honest 2020s update: ego depletion was hit hard by the replication crisis. Large pre-registered multi-lab replications found effects statistically indistinguishable from zero, the glucose mechanism collapsed, and the parole study has strong mundane explanations (case ordering isn\u2019t random). Kahneman himself publicly acknowledged that Part I leaned on underpowered studies and that readers \u2014 and he \u2014 had been too easily convinced. Keep the practical kernel: attention in the moment is genuinely finite (that part is rock solid), and making big decisions exhausted is still a bad idea. Drop the hydraulic battery story.',
+   examples:[
+     'Still true: you cannot compute 17 \u00d7 24 while merging onto the highway \u2014 in-the-moment attention is a hard constraint.',
+     'The meta-example: a coherent story (glucose! willpower muscle!) felt like proof to millions of readers, a Nobel laureate included. WYSIATI eats scientists too.'],
+   exps:[
+     {name:'Radish/cookie study \u2014 Baumeister et al. (1998)', find:'Students who resisted fresh cookies (eating radishes instead) quit an unsolvable puzzle in half the time of cookie-eaters \u2014 the charismatic origin of the depletion model.'},
+     {name:'Registered replication \u2014 Hagger et al. (2016)', find:'~2,000 participants across 23 labs, pre-registered protocol: the depletion effect was statistically indistinguishable from zero. Follow-up mega-studies found at most tiny effects.'},
+     {name:'Parole judges reexamined \u2014 Weinshall-Margel & Shapard (2011)', find:'Case ordering in the Israeli courts isn\u2019t random: prisoners without lawyers cluster late in sessions. Much of the dramatic \u201chungry judges\u201d effect likely reflects scheduling, not glucose.'}],
+   tip:'Schedule genuinely hard thinking and big decisions when fresh \u2014 for attention reasons, not battery reasons. And treat this entry as a template: when one flashy study fits a neat story perfectly, that\u2019s the moment to ask for sample sizes.'},
+  {emoji:'\uD83C\uDFA2', name:'Peak\u2013end rule', ref:'Part V \u00b7 ch. 35',
+   one:'Memory keeps two snapshots: the most intense moment, and the last one.',
+   text:'Remembered experience \u2248 the average of its peak intensity and its ending; almost everything else is discarded. This is the remembering self\u2019s core compression algorithm, and it has a shocking corollary: adding extra discomfort to an experience can improve its memory, if the addition makes the ending gentler. Since the remembering self makes the decisions \u2014 which restaurant to revisit, whether to repeat the procedure, whether the marriage \u201cwas happy\u201d \u2014 we systematically choose more total pain with better endings over less total pain with worse ones. The tyranny runs deep: we plan vacations partly as future-memory acquisition, and the anticipated photo album outweighs the anticipated experience.',
+   examples:[
+     'Three days of rain, mud and food poisoning at a festival \u2014 but the final headliner was transcendent. Verdict: \u201cbest weekend ever.\u201d Next year\u2019s ticket: purchased.',
+     'A great holiday capped by a brutal airport fight on the way home gets refiled, in memory, as a bad holiday. Two weeks, overwritten by two hours.',
+     'The last interview round, the last slide, the last five minutes of a difficult conversation \u2014 all wildly overweighted in what people take away. Design endings on purpose.'],
+   exps:[
+     {name:'Colonoscopy study \u2014 Redelmeier & Kahneman (1996)', find:'Patients whose procedure was extended by a few final minutes of milder discomfort remembered less pain overall and returned for follow-ups at higher rates \u2014 objectively more pain, subjectively better memory.'},
+     {name:'Cold-hand experiment \u2014 Kahneman et al. (1993)', find:'Given the choice, most people opted to repeat 90 seconds of cold-water pain (60s at 14\u00b0C + 30s warming slightly) over the plain 60 seconds. More total suffering, better ending \u2014 the remembering self signed both of them up.'}],
+   tip:'Two uses: when evaluating an experience, ask \u201cam I rating 40 hours or two snapshots?\u201d \u2014 and when designing one (a trip, a sprint, a 1:1, a farewell), invest disproportionately in the ending, because that\u2019s what will exist afterward.'},
+  {emoji:'\u23F3', name:'Duration neglect', ref:'Part V \u00b7 ch. 36',
+   one:'How long it lasted barely matters to how it\u2019s remembered.',
+   text:'The remembering self stores episodes as prototypes \u2014 a representative moment plus an ending \u2014 not as time-integrals. Doubling a vacation\u2019s length doesn\u2019t double its remembered value; it barely moves it. The disturbing thought experiment is a life evaluated after death: people judging a fictional woman\u2019s life barely respond to whether her happy years numbered 30 or 60, but a mildly-less-happy five extra years lowers the whole life\u2019s rating (the \u201cpeak-end\u201d of a biography). Duration neglect quietly rearranges real priorities: we optimize for memorable moments over sustained conditions, buy experiences that photograph well, and undervalue fixing chronic low-grade problems \u2014 a slightly painful commute, a background anxiety \u2014 that consume enormous integrated hours without ever producing a peak.',
+   examples:[
+     'A 10-year happy marriage that ends badly gets refiled, in memory, as a mistake \u2014 a decade outvoted by an ending.',
+     'You\u2019ll spend 40 minutes researching a restaurant for a 2-hour dinner and zero minutes fixing the chair that mildly hurts your back 8 hours a day.',
+     'Two weeks in Italy vs one week: nearly identical remembered value. The experiencing self noticed the difference; nobody asked it.'],
+   exps:[
+     {name:'The story of Jen \u2014 Kahneman\u2019s thought experiment', find:'Evaluations of a fictional life were almost unchanged by doubling its happy duration, but adding five \u201cmildly pleasant\u201d extra years lowered ratings \u2014 the added years diluted the prototype. Duration barely counts; trajectory and ending do.'},
+     {name:'Colonoscopy duration data', find:'Procedures ranged from 4 to 69 minutes; remembered discomfort correlated with peak and end, and essentially not at all with length. Seventeen extra minutes of pain, invisible to memory.'}],
+   tip:'Give the experiencing self a vote: a one-line daily log (\u201chow was today, 1\u201310, actually\u201d) creates duration-weighted data your memory refuses to keep \u2014 and it will disagree with your stories in useful ways.'},
+  {emoji:'\uD83D\uDD26', name:'Focusing illusion', ref:'Part V \u00b7 ch. 38',
+   one:'Nothing is as important as it seems while you\u2019re thinking about it.',
+   text:'Whenever you evaluate how much something matters \u2014 income, weather, a purchase, a disability \u2014 attention inflates it: the act of considering X makes X momentarily enormous. The question \u201chow much would X improve my life?\u201d gets substituted with \u201chow big does X feel right now, while I stare at it?\u201d This is why Californians aren\u2019t happier than Midwesterners though everyone (including Californians) is sure they must be; why paraplegics report far higher moods than anyone predicts (life continues, attention moves on \u2014 adaptation is real and unimaginable in advance); and why every major purchase delivers less than the showroom feeling promised. Miswanting \u2014 systematically mispredicting what will make us happy \u2014 is the focusing illusion\u2019s compound interest.',
+   examples:[
+     'The new car makes you happier for exactly as long as you keep thinking about the new car. Approximately eleven days.',
+     'Asked \u201chow happy are you?\u201d after first being asked about their dating life, students\u2019 answers transform \u2014 whatever was just spotlit becomes the measure of everything.',
+     '\u201cI\u2019d be so much happier in Lisbon/at that company/with that salary\u201d \u2014 a forecast made while staring exclusively at the one variable that would change.'],
+   exps:[
+     {name:'Schkade & Kahneman \u2014 California (1998)', find:'Actual life satisfaction: identical in California and the Midwest. Predicted satisfaction (by both groups): California, clearly. Everyone was thinking about the weather while answering \u2014 and weather barely figures in lived experience.'},
+     {name:'Paraplegics & lottery winners \u2014 Brickman et al. (1978)', find:'A year on, lottery winners were barely happier than controls and paraplegic accident victims far less unhappy than anyone predicts \u2014 attention migrates back to ordinary life, and moment-to-moment mood follows.'}],
+   tip:'For any big \u201cthis will change everything\u201d judgment \u2014 purchase, move, job \u2014 impose a delay and ask: \u201chow often will I actually think about this in an ordinary Tuesday, three months in?\u201d That number, not the showroom feeling, is the effect size.'}
+]}
+];
+
+function renderBiases(){
+  const root = document.getElementById('biasRoot');
+  root.innerHTML = BIASES.map(f=>`
+    <div class="family-block">
+      <div class="family-title"><span class="family-dot" style="background:${f.color}"></span>${f.fam}</div>
+      <div class="bias-list">
+        ${f.items.map((b,i)=>`
+        <div class="bias-item">
+          <button class="bias-btn" aria-expanded="false">
+            <span class="bias-emoji">${b.emoji}</span>
+            <span><span class="bias-name">${b.name}</span><br><span class="bias-one">${b.one}</span></span>
+            <span class="bias-caret">\u203A</span>
+          </button>
+          <div class="bias-body">
+            <div style="margin-bottom:10px"><span class="chip">${b.ref}</span></div>
+            <p style="color:var(--ink-soft)">${b.text}</p>
+            <h4>In the wild</h4>
+            <ul>${b.examples.map(e=>`<li>${e}</li>`).join('')}</ul>
+            <h4>The receipts \u2014 experiments</h4>
+            ${b.exps.map(x=>`<div class="exp"><b>${x.name}</b><span>${x.find}</span></div>`).join('')}
+            <div class="bias-tip"><b>\uD83D\uDEE1 How to catch it:</b> ${b.tip}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+  root.addEventListener('click',e=>{
+    const btn = e.target.closest('.bias-btn'); if(!btn) return;
+    const item = btn.parentElement;
+    const open = item.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
+  });
+}
+</script>
+<script>
+/* ================= DATA: QUIZ ================= */
+const QUIZ = [
+{title:'The Legendary Demo',
+ story:[`Marek joined the team three weeks ago. On Friday he demos a small feature \u2014 and it\u2019s <em>beautiful</em>. Clean slides, confident voice, one perfectly timed joke about legacy code. The VP laughs. Someone claps.`,
+ `By Monday, the reorg doc has changed. Marek is now \u201ca strong candidate to lead the platform redesign,\u201d penciled in to mentor two interns, and \u2014 nobody remembers deciding this \u2014 apparently \u201cgreat with clients.\u201d He has never met a client. His actual code has been reviewed exactly once.`],
+ q:'The management team is running on\u2026',
+ opts:[
+  {t:'Halo effect', ok:true},
+  {t:'Availability heuristic', ok:false},
+  {t:'Sunk cost fallacy', ok:false},
+  {t:'Regression to the mean', ok:false}],
+ fb:'One vivid trait \u2014 \u201cgives great demos\u201d \u2014 has been extended on credit to architecture skill, mentoring, and client charm. That\u2019s the halo effect, powered by WYSIATI: nobody asked what information was missing (like, say, his code). Availability is tempting since the demo is memorable, but availability is about estimating <em>frequency</em>; here one trait is coloring unrelated <em>traits</em>.'},
+
+{title:'The 4,200 z\u0142 \u201cSteal\u201d',
+ story:[`Ola is flat-hunting in Krak\u00f3w. The first listing she tours is a two-room near the center: 4,500 z\u0142. The agent, sensing hesitation, leans in: \u201cBetween us \u2014 I can get the owner down to 4,200. That\u2019s a steal for this street.\u201d`,
+ `Ola feels a little thrill of victory. That evening she signs. A week later she learns her neighbor \u2014 same building, same layout, better balcony \u2014 pays 3,600. Ola decides the neighbor must be lying.`],
+ q:'What captured Ola\u2019s estimate of the flat\u2019s value?',
+ opts:[
+  {t:'Endowment effect', ok:false},
+  {t:'Anchoring', ok:true},
+  {t:'Framing effect', ok:false},
+  {t:'Loss aversion', ok:false}],
+ fb:'The 4,500 anchor made 4,200 feel like winning \u2014 the negotiation happened <em>inside the anchor\u2019s gravity</em>, never against the market. Framing is about wording of the same facts; endowment requires her to already own the flat. Classic anchoring: the first number spoken owns the conversation. (Real-estate agents know this. Now you do too.)'},
+
+{title:'True Crime, Three Locks',
+ story:[`Kasia binge-watches a documentary series about apartment burglaries \u2014 six episodes, dramatic reenactments, one very sinister locksmith. By episode four she\u2019s ordering a camera doorbell. By episode six, two extra locks.`,
+ `Her building\u2019s chat has discussed exactly one incident in four years: someone stole a doormat. The city\u2019s burglary rate has fallen every year for a decade. Kasia now carries her laptop to the gym, \u201cjust in case.\u201d`],
+ q:'Kasia\u2019s risk estimate is inflated mainly by\u2026',
+ opts:[
+  {t:'Base-rate neglect', ok:false},
+  {t:'Availability heuristic', ok:true},
+  {t:'Priming', ok:false},
+  {t:'Affect heuristic', ok:false}],
+ fb:'Six hours of vivid burglary imagery made break-ins effortlessly easy to imagine \u2014 and ease of recall got read as probability. That\u2019s availability. Base-rate neglect is the closest wrong answer (she does ignore the falling statistics!), but the <em>mechanism</em> doing the damage is vividness-driven recall \u2014 the base rate loses because the documentary is more available, not because a stereotype resembles anything.'},
+
+{title:'Mud, Rain, Fireworks',
+ story:[`Three-day festival. Day one: rain. Day two: Tomek\u2019s tent floods and a food truck betrays him profoundly. Day three, 40 hours of misery in: the headliner plays the set of a lifetime as fireworks fill the sky, and a stranger hugs him, crying, during the encore.`,
+ `On the train home \u2014 damp, broke, faintly nauseous \u2014 Tomek writes a review: \u201cBest weekend of my life.\u201d He buys next year\u2019s ticket before the train reaches Krak\u00f3w G\u0142\u00f3wny.`],
+ q:'Tomek\u2019s glowing verdict is manufactured by\u2026',
+ opts:[
+  {t:'Sunk cost fallacy', ok:false},
+  {t:'Peak\u2013end rule', ok:true},
+  {t:'Availability heuristic', ok:false},
+  {t:'Halo effect', ok:false}],
+ fb:'His remembering self kept two snapshots \u2014 the transcendent peak and the fireworks ending \u2014 and shredded roughly 40 hours of mud (duration neglect). The experiencing self suffered; the remembering self writes the review and buys the tickets. Sunk cost would be <em>staying</em> because he paid; here the bias is in the memory, not the decision to endure.'},
+
+{title:'The Science of Yelling',
+ story:[`Coach Darek has a theory. When his young climbers nail a route, he praises them \u2014 and, annoyingly, they usually do worse on the next attempt. When they flail, he yells \u2014 and, satisfyingly, they usually improve.`,
+ `\u201cTwenty years on the wall,\u201d Darek says, tapping his temple. \u201cPraise makes them soft. Pressure makes diamonds.\u201d He has data. He has consistency. He is completely wrong.`],
+ q:'What\u2019s actually producing Darek\u2019s \u201cevidence\u201d?',
+ opts:[
+  {t:'Illusion of validity', ok:false},
+  {t:'Hindsight bias', ok:false},
+  {t:'Regression to the mean', ok:true},
+  {t:'Anchoring', ok:false}],
+ fb:'An unusually great attempt is partly luck, so the next one tends back toward average \u2014 <em>regardless</em> of praise. An unusually bad attempt regresses upward \u2014 <em>regardless</em> of yelling. Darek has attached a causal story (and a pedagogy) to pure statistics. Kahneman met exactly this in flight instructors. Illusion of validity is what Darek <em>develops</em> from this evidence \u2014 but the machinery generating the pattern is regression.'},
+
+{title:'Three Hours of Pain, 300 z\u0142',
+ story:[`Twenty minutes into the concert, it\u2019s undeniable: the band is having a bad night, possibly a bad decade. The sound is soup. The singer keeps saying \u201cKrak\u00f3w, we love you\u201d to what is clearly a backing track.`,
+ `\u201cThere\u2019s a pierogi place across the street,\u201d whispers Ania. \u201cStill open.\u201d Bartek stares straight ahead, jaw set. \u201cWe paid three hundred z\u0142oty for these tickets. We are going to enjoy them.\u201d They stay. All three hours. Nobody enjoys them.`],
+ q:'Bartek\u2019s heroic endurance is\u2026',
+ opts:[
+  {t:'Loss aversion', ok:false},
+  {t:'Endowment effect', ok:false},
+  {t:'Sunk cost fallacy', ok:true},
+  {t:'Certainty effect', ok:false}],
+ fb:'The 300 z\u0142 is gone whether they stay or eat pierogi \u2014 the only real decision is \u201cmisery vs dumplings,\u201d and dumplings win on every axis. Weighing an unrecoverable past cost is sunk cost. It\u2019s <em>fueled</em> by loss aversion (leaving makes the loss feel real), which is why that option is tempting \u2014 but the signature move here is letting spent money steer a future decision.'},
+
+{title:'The Gentle Man on Tram 52',
+ story:[`At a dinner party, Jula describes a man she saw on the tram: mid-forties, reading Szymborska, corduroy jacket with actual elbow patches, gave up his seat with a small apologetic bow, carried a tote bag from a vinyl shop.`,
+ `\u201cOkay,\u201d she asks the table, \u201cis he more likely a librarian or a delivery driver?\u201d The table votes librarian, 7\u20130, with two people adding \u201cobviously.\u201d Krak\u00f3w employs roughly forty times more delivery drivers than male librarians.`],
+ q:'The table\u2019s unanimous \u201cobviously\u201d comes from\u2026',
+ opts:[
+  {t:'Representativeness heuristic', ok:true},
+  {t:'Availability heuristic', ok:false},
+  {t:'Halo effect', ok:false},
+  {t:'Framing effect', ok:false}],
+ fb:'The description is a perfect librarian <em>stereotype</em>, so similarity swallowed the base rate: with a 40:1 population gap, even a very librarian-ish man is probably a driver who likes poetry. This is Kahneman\u2019s Tom W / farmer-librarian setup. Availability would be about how easily examples come to mind; here it\u2019s resemblance doing the work \u2014 the fingerprint of representativeness.'},
+
+{title:'Magda, Probably in a Bank',
+ story:[`Magda, 29, philosophy degree, spent her student years organizing climate marches and arguing about ethics until 3 a.m. She owns a bike with a name.`,
+ `Quiz night question: which is more probable? (A) Magda works in a bank. (B) Magda works in a bank <em>and</em> runs a vegan food blog on weekends. The room picks B almost unanimously \u2014 \u201cA alone just doesn\u2019t sound like her.\u201d`],
+ q:'The room has just committed\u2026',
+ opts:[
+  {t:'The conjunction fallacy', ok:true},
+  {t:'Base-rate neglect', ok:false},
+  {t:'Affect heuristic', ok:false},
+  {t:'The planning fallacy', ok:false}],
+ fb:'Bank-AND-blog is a strict subset of bank \u2014 P(A\u2227B) \u2264 P(A), always, for anyone, including Magda. Adding the blog made the story more <em>representative</em> of her, and coherence beat logic. This is the Linda problem wearing a bike helmet: 85% of Stanford students made the same call. Representativeness is the cause; the conjunction fallacy is the crime.'},
+
+{title:'Two Weekends, Tops',
+ story:[`In January, Piotr announces his side project: a small rhythm game. \u201cThe core mechanic\u2019s simple. Two weekends, tops. Maybe I\u2019ll polish the menus in week three.\u201d His girlfriend, who has known him for six years, silently books solo plans through May.`,
+ `It is now month four. The core mechanic works, except when the player pauses, which crashes the audio thread, which Piotr has renamed \u201cthe demon.\u201d The menus do not exist. Piotr remains confident the <em>next</em> feature will take a weekend.`],
+ q:'Piotr\u2019s schedule was doomed at birth by\u2026',
+ opts:[
+  {t:'Overconfidence in general', ok:false},
+  {t:'The planning fallacy', ok:true},
+  {t:'Sunk cost fallacy', ok:false},
+  {t:'Anchoring on \u201ctwo weekends\u201d', ok:false}],
+ fb:'He forecast from the inside view \u2014 his intentions, his best case \u2014 and ignored the outside view: what similar projects (including his own past ones!) actually took. That specific failure is the planning fallacy. \u201cOverconfidence\u201d is technically the genus, but Kahneman would ding you for imprecision \u2014 the book names this exact species. The fix: ask \u201chow long do projects like this take for people like me?\u201d and start there. His girlfriend, using base rates, is the only forecaster in this story.'},
+
+{title:'The Coin-Flip Coward',
+ story:[`A trustworthy friend offers Wojtek a genuine coin flip: heads he wins 1,200 z\u0142, tails he loses 1,000 z\u0142. Wojtek recoils like the coin is radioactive. \u201cAre you insane? A thousand z\u0142oty!\u201d`,
+ `That same afternoon, Wojtek renews his phone insurance: 80 z\u0142 a month, on a phone worth 900 z\u0142, against a risk that has materialized zero times in his life. He describes this as \u201cbeing responsible.\u201d`],
+ q:'Wojtek\u2019s two decisions are both driven by\u2026',
+ opts:[
+  {t:'Loss aversion', ok:true},
+  {t:'The certainty effect', ok:false},
+  {t:'Framing effect', ok:false},
+  {t:'Endowment effect', ok:false}],
+ fb:'The bet has positive expected value (+100 z\u0142), but the possible loss looms about twice as large as the gain \u2014 so he refuses. The insurance is the same asymmetry from the other side: he pays a guaranteed drip of small losses to eliminate one vivid big one. Certainty effect is a fair second guess for the insurance half \u2014 but only loss aversion explains <em>both</em> choices with one mechanism, and that\u2019s the tell.'},
+
+{title:'\u201cI Can Just Tell\u201d',
+ story:[`Renata has interviewed engineers for eleven years. \u201cGive me ninety minutes with a candidate,\u201d she says, \u201cand I know.\u201d Her last sure-thing hire reorganized the team\u2019s snack shelf, gave two beautiful presentations, and quietly shipped nothing for a year.`,
+ `Confronted with this, Renata nods thoughtfully. \u201cRight, but that\u2019s because he was an exception. The next one \u2014 the next one I could just <em>tell</em>.\u201d Her company\u2019s own data shows interview scores barely correlate with performance. Renata has read this report. It changed nothing.`],
+ q:'Renata\u2019s unsinkable confidence is\u2026',
+ opts:[
+  {t:'Halo effect', ok:false},
+  {t:'Illusion of validity', ok:true},
+  {t:'Hindsight bias', ok:false},
+  {t:'Representativeness', ok:false}],
+ fb:'Her confidence comes from the <em>coherence</em> of the impression a candidate makes \u2014 not from any predictive track record, which she knows is near zero. Knowing the statistics and still feeling sure: that\u2019s the illusion of validity, exactly what young Kahneman felt assessing soldiers. Halo is likely operating <em>inside</em> each interview (one good trait spreading) \u2014 but the phenomenon being described is the indestructible confidence itself.'},
+
+{title:'Ninety Percent Alive',
+ story:[`Pan Stanis\u0142aw, 71, needs a heart procedure. The first cardiologist says: \u201cOf a hundred patients like you, ninety are alive five years after this operation.\u201d Stanis\u0142aw nods. Sounds good. Let\u2019s do it.`,
+ `Seeking a second opinion, he visits another clinic. \u201cI\u2019ll be honest,\u201d says the second doctor. \u201cTen out of a hundred patients like you are dead within five years of this operation.\u201d Stanis\u0142aw goes home shaken and tells his daughter he\u2019s decided against \u201cthat butcher\u2019s surgery.\u201d`],
+ q:'Stanis\u0142aw\u2019s reversal was caused by\u2026',
+ opts:[
+  {t:'The framing effect', ok:true},
+  {t:'Loss aversion', ok:false},
+  {t:'The availability heuristic', ok:false},
+  {t:'Anchoring', ok:false}],
+ fb:'Identical statistic, opposite decisions \u2014 the definition of framing. \u201c90% survive\u201d evokes life; \u201c10% die\u201d evokes a funeral, and System 1 reacts to the evoked image, not the number. Loss aversion is <em>why</em> the mortality frame stings harder (it\u2019s framed as loss), so it\u2019s a respectable runner-up \u2014 but the phenomenon, tested on actual physicians by McNeil and colleagues, is the framing effect.'},
+
+{title:'The Lucky Fund',
+ story:[`At a family dinner, Uncle Ryszard holds court: \u201cMy fund manager beat the market four years out of five. The man is a genius. I\u2019m moving everything to him.\u201d`,
+ `Nobody asks how many fund managers exist. (Thousands.) Nobody asks how many would beat the market four years in five by pure luck. (With thousands flipping coins \u2014 plenty.) Ryszard has seen a streak; therefore he has seen skill. The genius\u2019s fee is 2%.`],
+ q:'Uncle Ryszard\u2019s \u201cgenius\u201d detection fails because of\u2026',
+ opts:[
+  {t:'The law of small numbers', ok:true},
+  {t:'The endowment effect', ok:false},
+  {t:'Peak\u2013end rule', ok:false},
+  {t:'The focusing illusion', ok:false}],
+ fb:'Five data points is a tiny sample, and tiny samples produce streaks constantly \u2014 believing a small sample reveals the true underlying skill is the law of small numbers. Kahneman\u2019s analysis of real fund data found year-to-year skill correlation near zero: the industry largely rewards luck as if it were skill. Ask Ryszard a base-rate question \u2014 \u201cout of all managers, how many have 4-of-5 streaks by chance?\u201d \u2014 and the genius evaporates.'}
+];
+
+/* ================= QUIZ ENGINE ================= */
+const mascotOK = `<svg width="56" height="56" viewBox="0 0 120 124"><use href="#mascot-s2"/></svg>`;
+const mascotNO = `<svg width="56" height="56" viewBox="0 0 120 120"><use href="#mascot-s1"/></svg>`;
+let qIndex = 0, qScore = 0, qDone = [];
+
+function renderQuiz(){
+  const shell = document.getElementById('quizShell');
+  if(qIndex >= QUIZ.length){ return renderQuizEnd(shell); }
+  const q = QUIZ[qIndex];
+  shell.innerHTML = `
+    <div class="quiz-progress">${QUIZ.map((_,i)=>{
+      let c='qdot'; if(i<qIndex) c+= qDone[i]?' done-right':' done-wrong'; if(i===qIndex) c+=' now';
+      return `<span class="${c}"></span>`;}).join('')}</div>
+    <div class="quiz-title">${qIndex+1}. ${q.title}</div>
+    <div class="quiz-story">${q.story.map(p=>`<p>${p}</p>`).join('')}</div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts">${q.opts.map((o,i)=>`<button class="opt" data-i="${i}">${o.t}</button>`).join('')}</div>
+    <div class="quiz-feedback" id="qfb"></div>
+    <button class="quiz-next" id="qnext">Next story \u2192</button>`;
+  shell.querySelectorAll('.opt').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const i=+btn.dataset.i, ok=q.opts[i].ok;
+      qDone[qIndex]=ok; if(ok) qScore++;
+      shell.querySelectorAll('.opt').forEach((b,j)=>{
+        b.disabled=true;
+        if(q.opts[j].ok) b.classList.add('right');
+        else if(j===i) b.classList.add('wrong');
+      });
+      const fb=document.getElementById('qfb');
+      fb.classList.add('show');
+      fb.innerHTML = `${ok?mascotOK:mascotNO}<div>
+        <div class="fb-verdict">${ok?'Correct. System 2 approves (quietly, over coffee).':'System 1 strikes again \u2014 it was so confident, too.'}</div>
+        <div class="fb-text">${q.fb}</div></div>`;
+      document.getElementById('qnext').classList.add('show');
+      fb.scrollIntoView({behavior:'smooth',block:'nearest'});
+    });
+  });
+  document.getElementById('qnext').addEventListener('click',()=>{qIndex++;renderQuiz();
+    document.getElementById('quizShell').scrollIntoView({behavior:'smooth',block:'start'});});
+}
+
+function renderQuizEnd(shell){
+  const n=QUIZ.length;
+  let rank, note;
+  if(qScore<=4){rank='Full System 1 Autopilot'; note='Fast, confident, frequently wrong \u2014 in fairness, so is everyone before reading the book. The bias library above is your friend.';}
+  else if(qScore<=8){rank='Lazy System 2 (Standard Human Model)'; note='You catch the obvious ones and get seduced by the elegant traps. Kahneman would say this is exactly the human condition.';}
+  else if(qScore<=11){rank='Certified Bias Spotter'; note='You noticed the difference between sunk cost and loss aversion. Your friends\u2019 bad decisions will never be safe from commentary again.';}
+  else {rank='System 2 Operator, First Class'; note='A perfect score. Kahneman would remind you that overconfidence peaks immediately after success \u2014 but yes, this was genuinely impressive.';}
+  shell.innerHTML = `<div class="quiz-final">
+    <div style="display:flex;justify-content:center;gap:20px;margin-bottom:8px">
+      <svg width="80" height="80" viewBox="0 0 120 120"><use href="#mascot-s1"/></svg>
+      <svg width="80" height="80" viewBox="0 0 120 124"><use href="#mascot-s2"/></svg>
+    </div>
+    <div class="big">${qScore} / ${n}</div>
+    <div class="rank">${rank}</div>
+    <p style="color:var(--ink-soft);max-width:520px;margin:0 auto">${note}</p>
+    <button class="quiz-restart" id="qrestart">Run it back \u21BB</button>
+  </div>`;
+  document.getElementById('qrestart').addEventListener('click',()=>{qIndex=0;qScore=0;qDone=[];renderQuiz();});
+}
+</script>
+<script>
+/* ================= DATA: MATH CORNER ================= */
+const MATHS = [
+{name:'Bayes\u2019 rule & base rates',
+ formula:'P(H\u2223E) = P(E\u2223H) \u00b7 P(H) / P(E)',
+ why:'Your belief after evidence should combine how diagnostic the evidence is with how common the thing was to begin with. Intuition uses only the first half.',
+ use:'Medical tests, hiring signals, judging \u201cwitnesses\u201d of any kind \u2014 anywhere a vivid clue meets a boring frequency.',
+ example:'The cab problem: 85% of cabs are Green, a witness (80% reliable) says the cab was Blue. Feels like ~80% Blue. Bayes: P = (0.8\u00d70.15) / (0.8\u00d70.15 + 0.2\u00d70.85) \u2248 41%. The base rate quietly wins.'},
+{name:'Regression to the mean',
+ formula:'predicted \u2248 mean + r \u00d7 (observed \u2212 mean)',
+ why:'Whenever correlation between two measurements is imperfect (r < 1), extreme results are followed by more average ones \u2014 with no cause whatsoever. Your brain will supply a cause anyway.',
+ use:'Performance reviews, A/B test follow-ups, \u201csophomore slumps,\u201d miracle diets, and every coach who believes yelling works.',
+ example:'A climber\u2019s brilliant attempt (way above their mean) is mostly skill plus good luck. Luck doesn\u2019t repeat on command, so the next attempt lands closer to their true average \u2014 praise didn\u2019t \u201cmake them soft.\u201d'},
+{name:'The law of small numbers',
+ formula:'SE = \u03c3 / \u221an',
+ why:'The standard error shrinks with sample size \u2014 meaning small samples swing wildly. Small schools produce both the best AND worst test scores; tiny counties have both the highest AND lowest cancer rates. Same reason: small n.',
+ use:'Any time someone shows you a streak, a small pilot study, a 5-review restaurant rating, or \u201cwe tried it for a week and it worked.\u201d',
+ example:'A fund manager beats the market 4 years of 5. With thousands of managers, hundreds achieve this by coin-flip luck alone. Ask for n before applauding.'},
+{name:'The conjunction rule',
+ formula:'P(A \u2227 B) \u2264 P(A)',
+ why:'A specific, detailed story can never be more probable than its vaguest component \u2014 yet detail makes stories more plausible-feeling. Plausibility and probability move in opposite directions.',
+ use:'Scenario planning, risk forecasts, conspiracy theories, and any pitch where every added detail makes you nod harder.',
+ example:'\u201cMagda works in a bank AND blogs about vegan food\u201d cannot beat \u201cMagda works in a bank.\u201d The blog detail adds representativeness and subtracts probability, simultaneously.'},
+{name:'Expected value (what Econs use)',
+ formula:'EV = \u03a3 p\u1d62 \u00b7 x\u1d62',
+ why:'The rational baseline: weight each outcome by its probability, sum, decide. Humans deviate from it in the specific, predictable ways prospect theory maps \u2014 so you need EV as the ruler to measure the bending.',
+ use:'Insurance, warranties, lottery tickets, salary negotiations with equity, and coin-flip offers from suspicious friends.',
+ example:'Coin flip: +1,200 z\u0142 or \u22121,000 z\u0142 \u2192 EV = 0.5\u00d71200 \u2212 0.5\u00d71000 = +100 z\u0142. An Econ accepts instantly. A Human recoils \u2014 see the curve below for exactly why.'}
+];
+
+function renderMath(){
+  const grid=document.getElementById('mathGrid');
+  grid.innerHTML = MATHS.map(m=>`
+    <div class="math-card">
+      <h3>${m.name}</h3>
+      <div class="formula">${m.formula}</div>
+      <h4>Why it matters</h4><p>${m.why}</p>
+      <h4>Where it saves you</h4><p class="hook">${m.use}</p>
+      <h4>Worked example</h4><p>${m.example}</p>
+    </div>`).join('') + `
+    <div class="math-card curve-card">
+      <h3>The prospect theory value curve \u2014 play with it</h3>
+      <p>Kahneman & Tversky\u2019s S-curve: value is felt relative to a reference point, gains flatten quickly (diminishing sensitivity), and the loss side is ~2.25\u00d7 steeper. Drag the slider and watch the asymmetry.</p>
+      <div class="curve-flex">
+        <svg id="ptCurve" viewBox="0 0 460 340" role="img" aria-label="Prospect theory value function"></svg>
+        <div class="curve-controls">
+          <label for="ptSlider" style="font-weight:800">Amount at stake: <span id="ptAmt" class="mono">500 z\u0142</span></label>
+          <input type="range" id="ptSlider" min="50" max="1000" step="10" value="500">
+          <div class="curve-read" id="ptRead"></div>
+          <p style="font-size:.85rem;color:var(--ink-soft);margin-top:10px">v(x) = x<sup>0.88</sup> for gains; \u22122.25\u00b7(\u2212x)<sup>0.88</sup> for losses \u2014 the parameters Kahneman & Tversky estimated from real choices.</p>
+        </div>
+      </div>
+    </div>`;
+  drawCurve();
+  const slider=document.getElementById('ptSlider');
+  slider.addEventListener('input',()=>updateCurve(+slider.value));
+  updateCurve(500);
+}
+
+const ptV = x => x>=0 ? Math.pow(x,0.88) : -2.25*Math.pow(-x,0.88);
+const PT = {w:460,h:340,cx:230,cy:170,sx:230/1050,sy:150/ptV(-1000)*-1};
+
+function ptPoint(x){ return [PT.cx + x*PT.sx, PT.cy - ptV(x)*(150/Math.abs(ptV(-1000)))]; }
+
+function drawCurve(){
+  const svg=document.getElementById('ptCurve');
+  let path='';
+  for(let x=-1000;x<=1000;x+=20){
+    const [px,py]=ptPoint(x);
+    path += (x===-1000?'M':'L')+px.toFixed(1)+' '+py.toFixed(1)+' ';
+  }
+  svg.innerHTML=`
+    <line x1="10" y1="${PT.cy}" x2="450" y2="${PT.cy}" stroke="#C9BBAE" stroke-width="2"/>
+    <line x1="${PT.cx}" y1="10" x2="${PT.cx}" y2="330" stroke="#C9BBAE" stroke-width="2"/>
+    <text x="440" y="${PT.cy-8}" text-anchor="end" font-size="12" fill="#5C5468" font-family="Space Mono">gains \u2192</text>
+    <text x="20" y="${PT.cy+18}" font-size="12" fill="#5C5468" font-family="Space Mono">\u2190 losses</text>
+    <text x="${PT.cx+8}" y="24" font-size="12" fill="#5C5468" font-family="Space Mono">feels good</text>
+    <text x="${PT.cx+8}" y="326" font-size="12" fill="#5C5468" font-family="Space Mono">feels bad</text>
+    <path d="${path}" fill="none" stroke="#2A2433" stroke-width="3.5"/>
+    <g id="gainDot"><circle r="8" fill="#12968F" stroke="#2A2433" stroke-width="2"/></g>
+    <g id="lossDot"><circle r="8" fill="#E84A7F" stroke="#2A2433" stroke-width="2"/></g>`;
+}
+
+function updateCurve(amt){
+  document.getElementById('ptAmt').textContent = amt+' z\u0142';
+  const [gx,gy]=ptPoint(amt), [lx,ly]=ptPoint(-amt);
+  document.getElementById('gainDot').setAttribute('transform',`translate(${gx},${gy})`);
+  document.getElementById('lossDot').setAttribute('transform',`translate(${lx},${ly})`);
+  const g=ptV(amt), l=Math.abs(ptV(-amt));
+  document.getElementById('ptRead').innerHTML =
+    `Winning ${amt} z\u0142 feels like <b class="gain">+${g.toFixed(0)}</b> happiness units.<br>
+     Losing ${amt} z\u0142 feels like <b class="loss">\u2212${l.toFixed(0)}</b>.<br>
+     The loss hits <b>${(l/g).toFixed(2)}\u00d7</b> harder \u2014 same money.`;
+}
+
+/* ================= DATA: ROADMAP ================= */
+const ROADMAP = [
+{color:'#FF6B2B', title:'Stage 1 \u00b7 Foundations \u2014 you are here',
+ desc:'Get the core map of how judgment actually works.',
+ items:[
+  '<b>Thinking, Fast and Slow</b> \u2014 Kahneman. The trunk of the tree; everything below is branches.',
+  '<b>Predictably Irrational</b> \u2014 Dan Ariely. Lighter, experiment-per-chapter; great reinforcement.',
+  '<b>The Undoing Project</b> \u2014 Michael Lewis. The Kahneman\u2013Tversky friendship as a story; makes the science stick emotionally.']},
+{color:'#E84A7F', title:'Stage 2 \u00b7 Choices & policy',
+ desc:'How the biases translate into markets, products and governments.',
+ items:[
+  '<b>Nudge</b> \u2014 Thaler & Sunstein. Choice architecture: designing for Humans, not Econs.',
+  '<b>Misbehaving</b> \u2014 Richard Thaler. The history of behavioral economics by its other Nobel laureate; funny and sharp.',
+  'Spot three nudges in your own apps this week \u2014 defaults, framings, anchors. They\u2019re everywhere once you look.']},
+{color:'#3D4EA1', title:'Stage 3 \u00b7 Forecasting & calibration',
+ desc:'Turn bias knowledge into measurably better predictions.',
+ items:[
+  '<b>Superforecasting</b> \u2014 Tetlock & Gardner. What the top 2% of forecasters do differently (hint: base rates, small updates).',
+  'Practice on a forecasting platform (e.g. Metaculus or Good Judgment Open) \u2014 calibration is a trainable skill.',
+  'Keep a <b>decision journal</b>: write your prediction and reasoning <em>before</em> outcomes arrive. It\u2019s the only cure for hindsight bias.']},
+{color:'#12968F', title:'Stage 4 \u00b7 Deeper waters',
+ desc:'The academic layer and the newer frontier.',
+ items:[
+  '<b>Noise</b> \u2014 Kahneman, Sibony & Sunstein. Bias\u2019s neglected twin: random scatter in judgment.',
+  '<b>Judgment under Uncertainty</b> (1982) \u2014 the original Kahneman\u2013Tversky papers, surprisingly readable.',
+  'A structured course: behavioral economics offerings on Coursera/edX (Duke\u2019s and the University of Toronto\u2019s are well regarded) if you want problem sets.']},
+{color:'#FFC145', title:'Stage 5 \u00b7 Practice on yourself',
+ desc:'The point was never trivia \u2014 it\u2019s catching your own System 1 in the act.',
+ items:[
+  'Before big estimates, force the <b>outside view</b>: \u201cwhat\u2019s the base rate for cases like mine?\u201d',
+  'For big decisions, run a <b>premortem</b> (Gary Klein): \u201cit\u2019s a year later and this failed \u2014 write the story of why.\u201d',
+  'When you feel very sure, ask the WYSIATI question: \u201cwhat information am I missing, and would it change this?\u201d']}
+];
+
+function renderRoadmap(){
+  document.getElementById('roadmapRoot').innerHTML = ROADMAP.map(s=>`
+    <div class="stop" style="--stopcolor:${s.color}">
+      <div class="stop-card">
+        <h3>${s.title}</h3>
+        <p>${s.desc}</p>
+        <ul>${s.items.map(i=>`<li>${i}</li>`).join('')}</ul>
+      </div>
+    </div>`).join('');
+}
+
+/* ================= BOOT ================= */
+renderTerms(); renderGraph(); renderBiases(); renderQuiz(); renderMath(); renderRoadmap();
+</script>
+</body>
+</html>
