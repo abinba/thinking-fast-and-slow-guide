@@ -78,6 +78,20 @@ nav{
   .nav-search-btn kbd,.nav-search-label{display:none}
   .nav-search-btn{padding:6px 10px}
 }
+.nav-companion-btn{
+  background:none;border:none;padding:6px 12px;border-radius:999px;
+  font-family:inherit;font-weight:700;font-size:.85rem;color:var(--ink);
+  cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+  transition:background .2s,color .2s;
+}
+.nav-companion-btn:hover,.nav-companion-btn:focus-visible{background:var(--ink);color:var(--paper)}
+.nav-companion-btn.active{background:var(--marigold);color:var(--ink);border:2px solid var(--ink);padding:4px 10px}
+.nav-companion-btn.active:hover{background:#F0B036;color:var(--ink)}
+@media (max-width:640px){
+  .nav-companion-label{display:none}
+  .nav-companion-btn.active .nav-companion-label{display:inline}
+  .nav-companion-btn{padding:6px 10px}
+}
 :focus-visible{outline:3px solid var(--flame);outline-offset:2px}
 
 /* ---------- hero ---------- */
@@ -540,6 +554,126 @@ h2{font-size:clamp(1.9rem,4vw,2.7rem);font-weight:900;letter-spacing:-.01em;marg
   border:1.5px solid var(--ink-soft);border-radius:4px;margin-right:3px;
 }
 
+/* ---------- chapter companion ---------- */
+.companion-modal-shell{
+  position:fixed;inset:0;z-index:210;display:none;
+}
+.companion-modal-shell.open{display:block}
+.companion-modal-shell .companion-backdrop{
+  position:absolute;inset:0;background:rgba(42,36,51,.55);backdrop-filter:blur(3px);
+  animation:palettefade .18s ease;
+}
+.companion-modal{
+  position:relative;margin:10vh auto 0;max-width:640px;width:calc(100% - 32px);
+  max-height:78vh;background:var(--card);border:2px solid var(--ink);
+  border-radius:20px;box-shadow:var(--shadow-lift);overflow:hidden;
+  display:flex;flex-direction:column;
+  animation:palettein .22s cubic-bezier(.2,.7,.15,1);
+}
+.companion-modal-head{
+  padding:20px 22px 14px;border-bottom:2px solid var(--ink);
+  display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+}
+.companion-modal-head h3{
+  font-family:'Fraunces',serif;font-size:1.35rem;font-weight:900;line-height:1.2;
+}
+.companion-modal-head p{color:var(--ink-soft);font-size:.9rem;margin-top:4px}
+.companion-esc{
+  font-family:'Space Mono',monospace;font-size:.68rem;font-weight:700;
+  padding:3px 8px;background:var(--paper-deep);color:var(--ink-soft);
+  border:1.5px solid var(--ink-soft);border-radius:6px;letter-spacing:.06em;
+  text-transform:uppercase;flex:none;
+}
+.companion-modal-body{
+  overflow-y:auto;padding:8px 0;
+}
+.companion-part{margin-bottom:8px}
+.companion-part-head{
+  padding:14px 22px 6px;font-family:'Space Mono',monospace;
+  font-size:.72rem;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--flame);
+}
+.companion-part-title{color:var(--ink-soft);font-weight:700}
+.companion-chapter{
+  display:flex;align-items:center;gap:14px;padding:10px 22px;
+  cursor:pointer;transition:background .12s;border-bottom:1px solid var(--paper-deep);
+  width:100%;text-align:left;background:none;border-left:none;border-right:none;
+  border-top:none;font-family:inherit;color:var(--ink);
+}
+.companion-chapter:hover{background:var(--paper)}
+.companion-chapter.active{background:#FFF3D6}
+.companion-chapter-num{
+  font-family:'Space Mono',monospace;font-size:.78rem;font-weight:700;
+  color:var(--ink-soft);min-width:32px;
+}
+.companion-chapter-title{
+  font-family:'Fraunces',serif;font-size:1rem;font-weight:700;
+}
+.companion-chapter.active .companion-chapter-num{color:var(--flame)}
+.companion-modal-foot{
+  padding:12px 22px;background:var(--paper);border-top:2px solid var(--ink);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+}
+.companion-modal-foot .clear-btn{
+  background:none;border:none;color:var(--rose);cursor:pointer;
+  font-family:'Space Mono',monospace;font-size:.72rem;font-weight:700;
+  letter-spacing:.06em;text-decoration:underline;
+}
+.companion-modal-foot .clear-btn:hover{color:#B03060}
+.companion-modal-foot-hint{
+  font-family:'Space Mono',monospace;font-size:.7rem;color:var(--ink-soft);
+}
+
+/* Floating strip when chapter is active */
+.companion-strip{
+  position:fixed;top:70px;right:16px;z-index:90;
+  background:var(--card);border:2px solid var(--ink);border-radius:16px;
+  box-shadow:var(--shadow-lift);padding:12px 14px 12px 16px;max-width:320px;
+  display:none;animation:palettein .28s cubic-bezier(.2,.7,.15,1);
+}
+.companion-strip.active{display:block}
+.companion-strip-eyebrow{
+  font-family:'Space Mono',monospace;font-size:.68rem;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--flame);
+  display:flex;align-items:center;gap:6px;
+}
+.companion-strip-title{
+  font-family:'Fraunces',serif;font-weight:900;font-size:1.02rem;
+  margin:4px 0 6px;line-height:1.25;
+}
+.companion-strip-stats{
+  font-size:.82rem;color:var(--ink-soft);margin-bottom:10px;
+}
+.companion-strip-actions{
+  display:flex;gap:6px;align-items:center;flex-wrap:wrap;
+}
+.companion-strip-btn{
+  padding:5px 10px;border:1.5px solid var(--ink-soft);background:var(--card);
+  border-radius:999px;font-size:.75rem;font-weight:700;cursor:pointer;
+  font-family:inherit;color:var(--ink);transition:background .15s,color .15s;
+}
+.companion-strip-btn:hover{background:var(--paper-deep)}
+.companion-strip-btn.primary{background:var(--marigold);border-color:var(--ink);color:var(--ink)}
+.companion-strip-btn.primary:hover{background:#F0B036}
+.companion-strip-btn.close{
+  margin-left:auto;color:var(--ink-soft);font-family:'Space Mono',monospace;
+  font-size:1rem;padding:2px 10px;
+}
+.companion-strip-btn.close:hover{color:var(--rose);background:transparent}
+.companion-strip-btn:disabled{opacity:.45;cursor:not-allowed}
+@media (max-width:640px){
+  .companion-strip{
+    top:auto;bottom:12px;right:12px;left:12px;max-width:none;
+  }
+}
+
+/* Card highlight when in current chapter */
+.term-card.in-chapter,.bias-item.in-chapter{
+  border-color:var(--marigold);
+  box-shadow:0 0 0 3px rgba(255,193,69,.5), var(--shadow);
+}
+.term-card.in-chapter{position:relative}
+
 /* ---------- bias library ---------- */
 .family-block{margin-bottom:34px}
 .family-title{
@@ -729,6 +863,10 @@ footer p{color:#CFC6DA;font-size:.92rem;max-width:560px;margin:0 auto}
     <a href="#quiz">Quiz</a>
     <a href="#math">Math corner</a>
     <a href="#roadmap">Go deeper</a>
+    <button class="nav-companion-btn" id="companionNavBtn" aria-label="Chapter companion">
+      <span class="nav-search-icon" aria-hidden="true">📖</span>
+      <span class="nav-companion-label" id="companionNavLabel">Chapter</span>
+    </button>
     <button class="nav-search-btn" id="navSearchBtn" aria-label="Search (Ctrl+K)">
       <span class="nav-search-icon" aria-hidden="true">⌕</span>
       <span class="nav-search-label">Search</span>
@@ -876,6 +1014,38 @@ footer p{color:#CFC6DA;font-size:.92rem;max-width:560px;margin:0 auto}
     <p>— the focusing illusion, and also a decent reason to close this tab and go read the actual book. It's better than any summary, including this one.</p>
   </div>
 </footer>
+
+<!-- ===== CHAPTER COMPANION ===== -->
+<div class="companion-modal-shell" id="companionModal" role="dialog" aria-modal="true" aria-label="Chapter picker">
+  <div class="companion-backdrop" id="companionBackdrop"></div>
+  <div class="companion-modal">
+    <div class="companion-modal-head">
+      <div>
+        <h3>Which chapter are you on?</h3>
+        <p>Pick a chapter and the site will highlight the concepts introduced there.</p>
+      </div>
+      <span class="companion-esc">esc</span>
+    </div>
+    <div class="companion-modal-body" id="companionList"></div>
+    <div class="companion-modal-foot">
+      <button class="clear-btn" id="companionClear">Clear selection</button>
+      <span class="companion-modal-foot-hint">Progress and highlights save in your browser</span>
+    </div>
+  </div>
+</div>
+
+<!-- Floating reading strip -->
+<aside class="companion-strip" id="companionStrip" aria-live="polite">
+  <div class="companion-strip-eyebrow">📖 <span>Reading companion</span></div>
+  <div class="companion-strip-title" id="companionStripTitle">Chapter</div>
+  <div class="companion-strip-stats" id="companionStripStats"></div>
+  <div class="companion-strip-actions">
+    <button class="companion-strip-btn" id="companionPrev" aria-label="Previous chapter">‹ Prev</button>
+    <button class="companion-strip-btn" id="companionNext" aria-label="Next chapter">Next ›</button>
+    <button class="companion-strip-btn primary" id="companionJump">Jump to first</button>
+    <button class="companion-strip-btn close" id="companionClose" aria-label="Close reading companion">×</button>
+  </div>
+</aside>
 
 <!-- ===== SEARCH PALETTE ===== -->
 <div class="palette" id="palette" role="dialog" aria-modal="true" aria-label="Search">
@@ -2761,6 +2931,318 @@ function initPalette(){
 }
 
 initPalette();
+</script>
+
+<script>
+/* =================================================================
+   CHAPTER COMPANION — pick a chapter, highlight what's introduced.
+   Parses the existing ref strings ("Part II · ch. 12–13") to know
+   which items belong to each chapter.
+   ================================================================= */
+
+const COMPANION_KEY = 'tfs_companion_v1';
+const PARTS = [
+  { roman:'I',   title:'Two Systems',            chapters:[
+    [1,  'The Characters of the Story'],
+    [2,  'Attention and Effort'],
+    [3,  'The Lazy Controller'],
+    [4,  'The Associative Machine'],
+    [5,  'Cognitive Ease'],
+    [6,  'Norms, Surprises, and Causes'],
+    [7,  'A Machine for Jumping to Conclusions'],
+    [8,  'How Judgments Happen'],
+    [9,  'Answering an Easier Question'],
+  ]},
+  { roman:'II',  title:'Heuristics and Biases',  chapters:[
+    [10, 'The Law of Small Numbers'],
+    [11, 'Anchors'],
+    [12, 'The Science of Availability'],
+    [13, 'Availability, Emotion, and Risk'],
+    [14, 'Tom W’s Specialty'],
+    [15, 'Linda: Less is More'],
+    [16, 'Causes Trump Statistics'],
+    [17, 'Regression to the Mean'],
+    [18, 'Taming Intuitive Predictions'],
+  ]},
+  { roman:'III', title:'Overconfidence',         chapters:[
+    [19, 'The Illusion of Understanding'],
+    [20, 'The Illusion of Validity'],
+    [21, 'Intuitions vs. Formulas'],
+    [22, 'Expert Intuition: When Can We Trust It?'],
+    [23, 'The Outside View'],
+    [24, 'The Engine of Capitalism'],
+  ]},
+  { roman:'IV',  title:'Choices',                chapters:[
+    [25, 'Bernoulli’s Errors'],
+    [26, 'Prospect Theory'],
+    [27, 'The Endowment Effect'],
+    [28, 'Bad Events'],
+    [29, 'The Fourfold Pattern'],
+    [30, 'Rare Events'],
+    [31, 'Risk Policies'],
+    [32, 'Keeping Score'],
+    [33, 'Reversals'],
+    [34, 'Frames and Reality'],
+  ]},
+  { roman:'V',   title:'Two Selves',             chapters:[
+    [35, 'Two Selves'],
+    [36, 'Life as a Story'],
+    [37, 'Experienced Well-Being'],
+    [38, 'Thinking About Life'],
+  ]},
+];
+const ALL_CHAPTERS = PARTS.flatMap(p => p.chapters.map(([n,t]) => ({num:n, title:t, part:p.roman, partTitle:p.title})));
+const CHAPTER_BY_NUM = Object.fromEntries(ALL_CHAPTERS.map(c => [c.num, c]));
+
+function extractChapters(ref){
+  const nums = new Set();
+  if(!ref) return nums;
+  const m = ref.match(/ch\.\s*([0-9–—,\s\-]+)/i);
+  if(!m) return nums;
+  m[1].split(',').forEach(part => {
+    const rng = part.trim().match(/(\d+)\s*[–—\-]\s*(\d+)/);
+    if(rng){
+      const a = +rng[1], b = +rng[2];
+      for(let i = Math.min(a,b); i <= Math.max(a,b); i++) nums.add(i);
+    } else {
+      const single = part.match(/\d+/);
+      if(single) nums.add(+single[0]);
+    }
+  });
+  return nums;
+}
+
+/* Extra mappings for items whose ref field isn't in the DOM
+   (lab experiments, math cards). Kept minimal so lab & math get
+   highlighted too when their signature chapter is active. */
+const LAB_CHAPTERS = {
+  'lab-anchoring':   new Set([11]),
+  'lab-linda':       new Set([15]),
+  'lab-framing':     new Set([26, 34]),
+  'lab-crt':         new Set([3]),
+  'lab-availability':new Set([12, 13]),
+};
+const MATH_CHAPTERS = {
+  'bayes-rule-base-rates':      new Set([16]),
+  'regression-to-the-mean':     new Set([17]),
+  'the-law-of-small-numbers':   new Set([10]),
+  'the-conjunction-rule':       new Set([15]),
+  'expected-value-what-econs-use': new Set([25, 26]),
+};
+
+function loadCompanion(){
+  try { return JSON.parse(localStorage.getItem(COMPANION_KEY)) || {}; }
+  catch(e){ return {}; }
+}
+function saveCompanion(s){
+  try { localStorage.setItem(COMPANION_KEY, JSON.stringify(s)); } catch(e){}
+}
+
+let firstHighlightedId = null;
+
+function itemsForChapter(chapter){
+  const ids = [];
+  if(!chapter) return ids;
+  TERMS.forEach(t => {
+    if(extractChapters(t.ref).has(chapter)) ids.push('term-' + t.id);
+  });
+  BIASES.forEach(f => f.items.forEach(b => {
+    if(extractChapters(b.ref).has(chapter)) ids.push('bias-' + biasSlug(b.name));
+  }));
+  Object.entries(LAB_CHAPTERS).forEach(([id, chs]) => {
+    if(chs.has(chapter)){
+      // Lab cards don't have IDs currently; grab by article order via labRoot children.
+      // We'll flag them individually below.
+    }
+  });
+  MATHS.forEach(m => {
+    const slug = mathSlug(m.name);
+    if((MATH_CHAPTERS[slug] || new Set()).has(chapter)) ids.push('math-' + slug);
+  });
+  return ids;
+}
+
+function applyChapterHighlights(chapter){
+  document.querySelectorAll('.in-chapter').forEach(el => el.classList.remove('in-chapter'));
+  firstHighlightedId = null;
+  if(!chapter) return;
+  const ids = itemsForChapter(chapter);
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if(el){
+      el.classList.add('in-chapter');
+      if(!firstHighlightedId) firstHighlightedId = id;
+    }
+  });
+  // Lab cards get highlighted too (they don't have IDs — use nth-child order)
+  const labRoot = document.getElementById('labRoot');
+  if(labRoot){
+    const order = ['lab-anchoring','lab-linda','lab-framing','lab-crt','lab-availability'];
+    labRoot.querySelectorAll('.lab-card').forEach((card, i) => {
+      const labId = order[i];
+      if(labId && (LAB_CHAPTERS[labId] || new Set()).has(chapter)){
+        card.classList.add('in-chapter');
+        if(!firstHighlightedId){
+          if(!card.id) card.id = 'lab-card-' + i;
+          firstHighlightedId = card.id;
+        }
+      }
+    });
+  }
+}
+
+function countItems(chapter){
+  let terms = 0, biases = 0, extras = 0;
+  TERMS.forEach(t => { if(extractChapters(t.ref).has(chapter)) terms++; });
+  BIASES.forEach(f => f.items.forEach(b => { if(extractChapters(b.ref).has(chapter)) biases++; }));
+  Object.values(LAB_CHAPTERS).forEach(chs => { if(chs.has(chapter)) extras++; });
+  MATHS.forEach(m => {
+    const slug = mathSlug(m.name);
+    if((MATH_CHAPTERS[slug] || new Set()).has(chapter)) extras++;
+  });
+  return { terms, biases, extras };
+}
+
+function pluralize(n, one, many){ return n + ' ' + (n === 1 ? one : (many || one + 's')); }
+
+function updateCompanionUI(){
+  const state = loadCompanion();
+  const chapter = state.chapter;
+  const navBtn = document.getElementById('companionNavBtn');
+  const navLabel = document.getElementById('companionNavLabel');
+  const strip = document.getElementById('companionStrip');
+  const title = document.getElementById('companionStripTitle');
+  const stats = document.getElementById('companionStripStats');
+  const prev = document.getElementById('companionPrev');
+  const next = document.getElementById('companionNext');
+  const jump = document.getElementById('companionJump');
+
+  if(!chapter){
+    navBtn?.classList.remove('active');
+    if(navLabel) navLabel.textContent = 'Chapter';
+    strip?.classList.remove('active');
+    applyChapterHighlights(null);
+    return;
+  }
+
+  const info = CHAPTER_BY_NUM[chapter];
+  if(!info) return;
+
+  navBtn?.classList.add('active');
+  if(navLabel) navLabel.textContent = 'Ch. ' + chapter;
+
+  const counts = countItems(chapter);
+  const parts = [];
+  if(counts.terms) parts.push(pluralize(counts.terms,'concept'));
+  if(counts.biases) parts.push(pluralize(counts.biases,'bias','biases'));
+  if(counts.extras) parts.push(pluralize(counts.extras,'lab/math item'));
+  const partLabel = 'Part ' + info.part + ' · ' + info.partTitle;
+  title.textContent = 'Ch. ' + chapter + ' · ' + info.title;
+  stats.innerHTML = `<em>${partLabel}</em><br>${parts.length ? parts.join(' · ') + ' introduced here' : 'Nothing catalogued from this chapter yet.'}`;
+  strip.classList.add('active');
+
+  const idx = ALL_CHAPTERS.findIndex(c => c.num === chapter);
+  prev.disabled = idx <= 0;
+  next.disabled = idx >= ALL_CHAPTERS.length - 1;
+  jump.disabled = parts.length === 0;
+
+  applyChapterHighlights(chapter);
+}
+
+function setChapter(num){
+  const s = loadCompanion();
+  s.chapter = num;
+  saveCompanion(s);
+  updateCompanionUI();
+}
+function clearChapter(){
+  const s = loadCompanion();
+  delete s.chapter;
+  saveCompanion(s);
+  updateCompanionUI();
+}
+
+function renderChapterList(){
+  const root = document.getElementById('companionList');
+  const active = loadCompanion().chapter;
+  root.innerHTML = PARTS.map(p => `
+    <div class="companion-part">
+      <div class="companion-part-head">Part ${p.roman} <span class="companion-part-title">· ${p.title}</span></div>
+      ${p.chapters.map(([n,t]) => `
+        <button class="companion-chapter${n === active ? ' active' : ''}" data-ch="${n}">
+          <span class="companion-chapter-num">Ch. ${n}</span>
+          <span class="companion-chapter-title">${t}</span>
+        </button>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function openCompanionModal(){
+  renderChapterList();
+  document.getElementById('companionModal').classList.add('open');
+  const active = loadCompanion().chapter;
+  if(active){
+    setTimeout(() => {
+      const el = document.querySelector('.companion-chapter.active');
+      if(el) el.scrollIntoView({block:'center'});
+    }, 30);
+  }
+}
+function closeCompanionModal(){
+  document.getElementById('companionModal').classList.remove('open');
+}
+
+function initCompanion(){
+  document.getElementById('companionNavBtn').addEventListener('click', openCompanionModal);
+  document.getElementById('companionBackdrop').addEventListener('click', closeCompanionModal);
+  document.getElementById('companionList').addEventListener('click', (e) => {
+    const b = e.target.closest('.companion-chapter');
+    if(!b) return;
+    setChapter(+b.dataset.ch);
+    closeCompanionModal();
+  });
+  document.getElementById('companionClear').addEventListener('click', () => {
+    clearChapter();
+    closeCompanionModal();
+  });
+  document.getElementById('companionPrev').addEventListener('click', () => {
+    const cur = loadCompanion().chapter;
+    const idx = ALL_CHAPTERS.findIndex(c => c.num === cur);
+    if(idx > 0) setChapter(ALL_CHAPTERS[idx - 1].num);
+  });
+  document.getElementById('companionNext').addEventListener('click', () => {
+    const cur = loadCompanion().chapter;
+    const idx = ALL_CHAPTERS.findIndex(c => c.num === cur);
+    if(idx >= 0 && idx < ALL_CHAPTERS.length - 1) setChapter(ALL_CHAPTERS[idx + 1].num);
+  });
+  document.getElementById('companionClose').addEventListener('click', clearChapter);
+  document.getElementById('companionJump').addEventListener('click', () => {
+    if(!firstHighlightedId) return;
+    if(firstHighlightedId.startsWith('bias-')){
+      openTarget(firstHighlightedId);
+    } else {
+      const el = document.getElementById(firstHighlightedId);
+      if(el){
+        el.scrollIntoView({behavior:'smooth', block:'center'});
+        el.classList.remove('flash');
+        void el.offsetWidth;
+        el.classList.add('flash');
+      }
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape'){
+      const modal = document.getElementById('companionModal');
+      if(modal.classList.contains('open')) closeCompanionModal();
+    }
+  });
+
+  updateCompanionUI();
+}
+
+initCompanion();
 </script>
 </body>
 </html>
