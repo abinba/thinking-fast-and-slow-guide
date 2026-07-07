@@ -276,6 +276,17 @@ h2{font-size:clamp(1.9rem,4vw,2.7rem);font-weight:900;letter-spacing:-.01em;marg
   text-underline-offset:3px;transition:color .15s,text-decoration-color .15s;
 }
 .bias-link:hover{color:var(--flame);text-decoration-color:var(--flame)}
+.crosslink{
+  font-family:'Space Mono',monospace;font-size:.66rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 10px;border-radius:999px;
+  color:var(--indigo);background:#E3E7FA;border:1.5px solid var(--indigo);
+  text-decoration:none;transition:background .15s,color .15s,transform .12s;
+  white-space:nowrap;display:inline-flex;align-items:center;gap:4px;flex-shrink:0;
+}
+.crosslink:hover,.crosslink:focus-visible{background:var(--indigo);color:var(--paper);transform:translateY(-1px)}
+.tag-link{text-decoration:none;color:inherit;transition:background .15s,color .15s}
+.tag-link:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .bias-item.flash, .term-card.flash{animation:linkflash 1.6s ease}
 @keyframes linkflash{
   0%,15%{box-shadow:0 0 0 4px var(--marigold), var(--shadow-lift)}
@@ -1223,19 +1234,27 @@ const TERMS = [
 
 function renderTerms(){
   const grid = document.getElementById('termGrid');
-  grid.innerHTML = TERMS.map(t=>`
+  grid.innerHTML = TERMS.map(t=>{
+    const biasMatch = findBiasSlugForTerm(t);
+    const libLink = biasMatch ? `<a class="crosslink" href="#bias-${biasMatch}">Full entry →</a>` : '';
+    return `
     <article class="term-card" id="term-${t.id}">
       <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
-        <h3>${t.name}</h3><span class="chip" style="flex-shrink:0">${t.ref}</span>
+        <h3>${t.name}</h3>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex-shrink:0">
+          <span class="chip">${t.ref}</span>
+          ${libLink}
+        </div>
       </div>
       <p>${t.def}</p>
       <div class="term-why">${t.why}</div>
       <div class="tag-row">
         <span class="tag ${FAM[t.fam].cls}">${FAM[t.fam].label}</span>
-        ${t.links.slice(0,3).map(l=>{const n=TERMS.find(x=>x.id===l);return n?`<span class="tag" style="color:#9a8f83">${n.name}</span>`:''}).join('')}
+        ${t.links.slice(0,3).map(l=>{const n=TERMS.find(x=>x.id===l);return n?`<a class="tag tag-link" href="#term-${n.id}">${n.name}</a>`:''}).join('')}
         ${progBtnHTML('term-' + t.id)}
       </div>
-    </article>`).join('');
+    </article>`;
+  }).join('');
 }
 
 /* ---------- force-directed graph ---------- */
@@ -1648,13 +1667,45 @@ const BIASES = [
 function biasSlug(name){
   return name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 }
+
+/* Cross-link helpers: match a term to its library entry and vice versa
+   by comparing slug prefixes. Returns the longest match to prevent
+   partial-word collisions. */
+function findBiasSlugForTerm(term){
+  const ts = biasSlug(term.name);
+  let best = null, bestLen = 0;
+  for(const fam of BIASES){
+    for(const b of fam.items){
+      const bs = biasSlug(b.name);
+      if(bs === ts || bs.startsWith(ts + '-')){
+        if(bs.length > bestLen){ best = bs; bestLen = bs.length; }
+      }
+    }
+  }
+  return best;
+}
+function findTermIdForBias(bias){
+  const bs = biasSlug(bias.name);
+  let best = null, bestLen = 0;
+  for(const t of TERMS){
+    const ts = biasSlug(t.name);
+    if(bs === ts || bs.startsWith(ts + '-')){
+      if(ts.length > bestLen){ best = t.id; bestLen = ts.length; }
+    }
+  }
+  return best;
+}
+
 function renderBiases(){
   const root = document.getElementById('biasRoot');
   root.innerHTML = BIASES.map(f=>`
     <div class="family-block">
       <div class="family-title"><span class="family-dot" style="background:${f.color}"></span>${f.fam}</div>
       <div class="bias-list">
-        ${f.items.map((b,i)=>`
+        ${f.items.map((b,i)=>{
+          const termId = findTermIdForBias(b);
+          const conceptLink = termId ? `<a class="crosslink" href="#term-${termId}">Concept card \u2192</a>` : '';
+          return `
         <div class="bias-item" id="bias-${biasSlug(b.name)}">
           <div class="bias-btn" role="button" tabindex="0" aria-expanded="false">
             <span class="bias-emoji">${b.emoji}</span>
@@ -1663,7 +1714,10 @@ function renderBiases(){
             <span class="bias-caret">\u203A</span>
           </div>
           <div class="bias-body">
-            <div style="margin-bottom:10px"><span class="chip">${b.ref}</span></div>
+            <div style="margin-bottom:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <span class="chip">${b.ref}</span>
+              ${conceptLink}
+            </div>
             <p style="color:var(--ink-soft)">${b.text}</p>
             <h4>In the wild</h4>
             <ul>${b.examples.map(e=>`<li>${e}</li>`).join('')}</ul>
@@ -1671,7 +1725,8 @@ function renderBiases(){
             ${b.exps.map(x=>`<div class="exp"><b>${x.name}</b><span>${x.find}</span></div>`).join('')}
             <div class="bias-tip"><b>\uD83D\uDEE1 How to catch it:</b> ${b.tip}</div>
           </div>
-        </div>`).join('')}
+        </div>`;
+        }).join('')}
       </div>
     </div>`).join('');
   root.addEventListener('click',e=>{
@@ -2442,7 +2497,7 @@ function openTarget(id){
   return true;
 }
 document.addEventListener('click', e => {
-  const a = e.target.closest('a.bias-link');
+  const a = e.target.closest('a.bias-link, a.crosslink, a.tag-link');
   if(!a) return;
   const href = a.getAttribute('href') || '';
   if(!href.startsWith('#')) return;
